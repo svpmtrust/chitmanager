@@ -10,9 +10,7 @@ from django.contrib.auth.decorators import login_required
 from django.http.response import HttpResponseRedirect
 from django.contrib.auth.models import User
 
-
-# Create your views here.
-  
+@login_required(login_url='/login')
 def mygroup(request):
     group_list = Group.objects.all()
     template = loader.get_template('group.html')
@@ -22,7 +20,7 @@ def mygroup(request):
     return HttpResponse(template.render(context))
 
 
-# @login_required(login_url='/login')
+@login_required(login_url='/login')
 def mycustomers(request):
     member_list = Member.objects.all()
     template = loader.get_template('member.html')
@@ -48,32 +46,32 @@ def auction(request):
     return HttpResponse(template.render(context))
 
 
-def login(request):
-    context = RequestContext(request)
-    if request.method == 'POST':
-        user = dj_auth(username=request.POST['username'],
-                       password=request.POST['password'])
-        if user is not None:
-            if user.is_active:
-                if user.is_superuser:
-                    template = loader.get_template('admin.html')
-                    return HttpResponse(template.render(context))
-                else:
-                    template = loader.get_template('user.html')
-                    return HttpResponse(template.render(context))
-            else:
-                context['error'] = 'Your account is disabled'
-        else:
-            context['error'] = 'Incorrect username or password'
-    else:
-        context['error'] = None
-        
-    template = loader.get_template('loginform.html')
-    return HttpResponse(template.render(context))
-
-def logout(request):
-    dj_logout(request)
-    return HttpResponseRedirect('/login')
+# def login(request):
+#     context = RequestContext(request)
+#     if request.method == 'POST':
+#         user = dj_auth(username=request.POST['username'],
+#                        password=request.POST['password'])
+#         if user is not None:
+#             if user.is_active:
+#                 if user.is_superuser:
+#                     template = loader.get_template('admin.html')
+#                     return HttpResponse(template.render(context))
+#                 else:
+#                     template = loader.get_template('user.html')
+#                     return HttpResponse(template.render(context))
+#             else:
+#                 context['error'] = 'Your account is disabled'
+#         else:
+#             context['error'] = 'Incorrect username or password'
+#     else:
+#         context['error'] = None
+#         
+#     template = loader.get_template('loginform.html')
+#     return HttpResponse(template.render(context))
+# 
+# def logout(request):
+#     dj_logout(request)
+#     return HttpResponseRedirect('/login')
 
 def Customerregistration(request):
     if request.method == 'GET':
@@ -118,7 +116,8 @@ def group(request):
 def groupmembers(request):
     context = RequestContext(request)
     if request.method == 'GET':
-        template = loader.get_template('subscriptions.html')
+        template = loader.get_template('subscription.html')
+        return HttpResponse(template.render(context))
     elif request.method == 'POST':
         group = Group()
         member = Member()
