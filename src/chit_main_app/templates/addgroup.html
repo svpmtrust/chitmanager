@@ -1,3 +1,15 @@
+<script type="text/javascript" src="http://code.jquery.com/jquery-1.4.2.min.js"></script>
+<link rel="stylesheet" href="http://code.jquery.com/ui/1.10.4/themes/smoothness/jquery-ui.css">
+<script src="http://code.jquery.com/jquery-1.9.1.js"></script>
+<script src="http://code.jquery.com/ui/1.10.4/jquery-ui.js"></script>
+<link rel="stylesheet" href="/resources/demos/style.css"> 
+ <script>
+$(function() {
+$( "#datepicker" ).datepicker();
+});
+</script>
+
+
 
 <div
 	style="float: right; font-size: 20; padding-right: 60; margin-top: 20">
@@ -22,7 +34,7 @@
 			</tr>
 			<tr>
 				<td style="padding-top: 10" align="right">Start Date :</td>
-				<td style="padding-top: 10"><input type="date" name="startdate"
+				<td style="padding-top: 10"><input type="text" id="datepicker" name="startdate"
 					required></td>
 			</tr>
 
