@@ -1,0 +1,68 @@
+<script type="text/javascript"src="http://code.jquery.com/jquery-1.4.2.min.js"></script>
+<script language="javascript" type="text/javascript">
+	
+function move_list_items(from_group_list, to_group_list)
+    {
+		$("#" + from_group_list + "  option:selected").appendTo(
+				"#" + to_group_list);
+	}
+	function move_list_items_all(from_group_list, to_group_list) 
+	{
+		$("#" + from_group_list + " option").appendTo("#" + to_group_list);
+	}
+</script>
+<table cellpadding="5" cellspacing="5">
+	<tbody>
+		<tr>
+			<td colspan="2">
+			<select id="from_group_list" multiple="multiple"
+				name="from_group_list">
+					<option value="name">Select Group Name</option> 
+					{% for group in group_list %}
+					<option value="name">{{ group.name }}</option> 
+					{% endfor %}
+			</select>
+			</td>
+			<td colspan="2">
+			<select id="to_group_list" multiple="multiple"
+				name="to_group_list">
+					<option value="name">Add Group Name</option>
+			</select>
+			</td>
+         </tr>
+		    <tr>
+		    <td><input id="moveright" type="button" value="Move Right"
+				onclick="move_list_items('from_group_list','to_group_list');"/></td>
+
+		    <td><input id="moverightall" type="button"
+				value="Move Right All"
+				onclick="move_list_items_all('from_group_list','to_group_list');" /></td>
+		</tr>
+		<tr>
+			<td colspan="2"><select id="from_member_list"
+				multiple="multiple" name="from_member_list">
+					<option value="member">Select Customer Name</option> 
+					{% for member in member_list %}
+					<option value="name">{{ member.name }}</option> 
+					{% endfor %}
+			</select>
+			</td>
+			<td colspan="2"><select id="to_member_list" multiple="multiple"
+				name="to_member_list">
+					<option value="member">Add Customer Name</option>
+			</select></td>
+		</tr>
+		<tr>
+			<td><input id="moveright" type="button" value="Move Right"
+				onclick="move_list_items('from_member_list','to_member_list');" /></td>
+
+			<td><input id="moverightall" type="button"
+				value="Move Right All"
+				onclick="move_list_items_all('from_member_list','to_member_list');" /></td>
+		</tr>
+		<tr>
+			<td><input type="button" value="Add"></td>
+
+		</tr>
+	</tbody>
+</table>

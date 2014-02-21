@@ -1,0 +1,44 @@
+{% if group_list %} 
+
+
+<ul style="font-size: 20;margin-right: 40; margin-top: 40">
+<li>Group list</li>
+<li><a href="/mycustomers">Customer list</a></li>
+<li style="float: right;"><a href="/logout">logout</a></li>
+</ul>
+
+<div style="padding-top:40; margin-left: 40;font-size: 20;clear: both;">
+	<a href="/newgroup">Add Group</a>
+</div>
+<table style="border-color: red; margin-top: 50; margin-left: 40"
+	border="1">
+	<tr>
+		<th>Name</th>
+		<th>Amount</th>
+		<th>Start_date</th>
+		<th>Total_months</th>
+	</tr>
+	{% for group in group_list %}
+	<tr>
+		<td><a href='/groupmembers'>{{ group.name }}</a></td>
+		<td>{{ group.amount }}</td>
+		<td>{{ group.start_date }}</td>
+		<td align="center">{{ group.total_months }}</td>
+	</tr>
+	{% endfor %}
+</table>
+{% else %}
+<p>No groups are available.</p>
+{% endif %}
+
+<style>
+	ul {
+		list-style: none;
+	}
+	
+	ul li {
+		display: inline;
+		float: left;
+		padding-right: 30px;
+	}	
+</style>	

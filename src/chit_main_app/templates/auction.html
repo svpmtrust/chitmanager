@@ -1,0 +1,20 @@
+{% if auction_list %}
+<table style="border-color: activecaption;" border="1">
+	<tr>
+		<th>Group Name</th>
+    	<th>Member Name</th>
+    	<th>amount_paid</th>
+    	<th>auction_date</th>
+	</tr>
+	{% for auction in auction_list %}
+	<tr>
+	    <td>{{ auction.group.name }}</td>
+		<td>{{ auction.member.name }}</td>
+		<td>{{ auction.amount }}</td>
+		<td>{{ auction.auction_date }}</td>
+	</tr>
+	{% endfor %}
+</table>
+{% else %}
+<p>No groups are available.</p>
+{% endif %}

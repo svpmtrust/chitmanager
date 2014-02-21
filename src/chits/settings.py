@@ -30,14 +30,14 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = (
-    # 'django.contrib.admin',
+    'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'chit_main_app'
-)
+    'chit_main_app',
+   )
 
 MIDDLEWARE_CLASSES = (
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -58,10 +58,14 @@ WSGI_APPLICATION = 'chits.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, '..', 'chit_data.sqlite3'),
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME':'chitmanager',
+        'USER': 'root',
+        'PASSWORD': 'karthik',
+        'HOST': '',
+        'PORT': '',
     }
-}
+    }
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.6/topics/i18n/

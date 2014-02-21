@@ -1,0 +1,21 @@
+{% if subscription_list %}
+<table style="border-color: activecaption;" border="1">
+	<tr>
+    	<th>Group Name</th>
+    	<th>Group Start_date</th>
+    	<th>Member Name</th>
+    	<th>Comments</th>
+	</tr>
+	{% for subscription in subscription_list %}
+	<tr>
+		<td>{{ subscription.group.name }}</td>
+		<td>{{ subscription.group.start_date }}</td>
+		<td>{{ subscription.member.name }}</td>
+		<td>{{ subscription.comments }}</td>
+		
+	</tr>
+	{% endfor %}
+</table>
+{% else %}
+<p>No subscribers are available.</p>
+{% endif %}
