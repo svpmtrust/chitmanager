@@ -1,24 +1,22 @@
 from django.shortcuts import HttpResponse
 from django.template import RequestContext, loader
 from chit_main_app.models import Group,Customer, Subscriptions
-from django.contrib.auth import logout as dj_logout
 from django.http.response import HttpResponseRedirect
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from django.template.response import TemplateResponse
 import itertools
 
-
 @login_required
 def homepage(request):
     if request.user.is_superuser:
         template = 'admin/home.html'
     else:
-        template = 'admin/user.html'
+        template = 'user/home.html'
 
     return TemplateResponse(request, template)
 
-def groupsnew(request):
+def new_group(request):
     context = RequestContext(request)
     if request.method == 'GET':
         template = loader.get_template('groups/new.html')
@@ -32,7 +30,7 @@ def groupsnew(request):
         group.save()
         return HttpResponseRedirect("/groups/list.html")
       
-def groupslist(request):
+def group_list(request):
     group_list = Group.objects.all()
     template = loader.get_template('groups/list.html')
     context = RequestContext(request, {
@@ -40,7 +38,7 @@ def groupslist(request):
     })
     return HttpResponse(template.render(context))
 
-def memberslist(request):
+def group_members(request):
     try:
         member_list = Subscriptions.objects.filter(group_id=request.GET['id'])
         group_details = Group.objects.get(id=request.GET['id'])
@@ -53,12 +51,12 @@ def memberslist(request):
     except Subscriptions.DoesNotExist:
         return HttpResponse("No members exist in this group.")
 
-def groupsdelete(request):
+def delete_group(request):
     group = Group.objects.get(id=request.GET["id"])
     group.delete()
     return HttpResponseRedirect("/groups/list.html")
 
-def customersnew(request):
+def new_customer(request):
     if request.method == 'GET':
         context = RequestContext(request)
         template = loader.get_template('customers/new.html')
@@ -74,7 +72,7 @@ def customersnew(request):
         member.save()
         return HttpResponseRedirect("/customers/list.html")
 
-def customerslist(request):
+def customer_list(request):
     customer_list = Customer.objects.all()
     template = loader.get_template('customers/list.html')
     context = RequestContext(request, {
@@ -82,7 +80,7 @@ def customerslist(request):
     })
     return HttpResponse(template.render(context))
 
-def customersdelete(request):
+def delete_customer(request):
     group = Customer.objects.get(id=request.GET["id"])
     group.delete()
     return HttpResponseRedirect("/groups/list.html")
@@ -119,7 +117,7 @@ def subscriptionnew(request):
             group = Group.objects.get(id=request.GET['gid'])
             customer_list = Customer.objects.all()
             group_list = Group.objects.all()
-            template = loader.get_template('subscriptions/new.html')
+            template = loader.get_template('customers/subscription.html')
             context = RequestContext(request, {
                 'customer_list': customer_list,
                 'group_list':group_list,
@@ -131,7 +129,7 @@ def subscriptionnew(request):
             customer = Customer.objects.get(id=request.GET['cid'])
             customer_list = Customer.objects.all()
             group_list = Group.objects.all()
-            template = loader.get_template('subscriptions/new.html')
+            template = loader.get_template('customers/subscription.html')
             context = RequestContext(request, {
                 'customer_list': customer_list,
                 'group_list':group_list,
@@ -184,8 +182,3 @@ def auctionnew(request):
         s.auction_number = request.POST['month']
         s.save()
         return HttpResponseRedirect('/groups/members.html?id='+ request.POST['group_id']) 
-
-
-def logout(request):
-    dj_logout(request)
-    return HttpResponseRedirect('/login')

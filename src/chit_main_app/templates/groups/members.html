@@ -2,7 +2,7 @@
 {% block title %}Group: {{group_details.name}} {% endblock%}
 {% block page_heading %}Group Details for {{group_details.name}}{% endblock%}
 {% block content %}
-<button onclick="window.location='/auctions/new.html?id={{group_details.id}}'">Enter Auction</button>
+<button onclick="window.location='/groups/auction?id={{group_details.id}}'">Enter Auction</button>
 <table border="1" bordercolor=lightgray cellspacing=0 cellpadding=5>
 	<tr>
 		<td align=right>Name</td>
@@ -19,7 +19,7 @@
 </table>
 
 <h3>Group Members</h3>
-<button onclick="window.location='/subscriptions/new?gid={{group_details.id}}'">Add Member</button>
+<button onclick="window.location='/customers/subscription?gid={{group_details.id}}'">Add Member</button>
 {% if member_list %}
 <table border="1" cellpadding=5 cellspacing=0>
 	<tr>

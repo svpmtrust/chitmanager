@@ -13,7 +13,7 @@ function giveWarningBeforeAdding() {
 	return confirm("Are you sure adding Customer " + $("#to_customer_list option").text() + " to the Group "+$("#to_group_list option").text()+"?");
 }
 </script>
-<form action="/subscriptions/new" method='post'>
+<form action="/customers/subscription" method='post'>
     {% if group.name %}
 		<input name="group_id" type="hidden" value="{{group.id}}" />
 	{% endif %}

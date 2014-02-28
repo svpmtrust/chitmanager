@@ -2,7 +2,7 @@
 {% block title %}{{customer_list.name}} details{% endblock %} 
 {% block page_heading %} Details of {{customer_list.name}} {% endblock %}
 {% block content %}
-<button onclick="window.location='/subscriptions/new?cid={{customer_list.id}}'">Add To Group</button>
+<button onclick="window.location='/customers/subscription?cid={{customer_list.id}}'">Add To Group</button>
 <p/>
 {% if group_list %} 
 <table border="1" bordercolor=lightgray cellspacing=0 cellpadding=5>
