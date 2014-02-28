@@ -1,7 +1,7 @@
 {% extends "site_layout.html" %}
 {% block title %}New Customer{% endblock %} 
+{% block page_heading %}Customer Registration form{% endblock %}
 {% block content %}
-<h3>Customer Registration form</h3>
 <form action="/customers/new" method="post">
 	{% csrf_token %}
 	<table border="0">

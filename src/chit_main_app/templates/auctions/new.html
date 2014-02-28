@@ -27,9 +27,9 @@ $( "#datepicker" ).datepicker({ dateFormat: 'yy-mm-dd' });
 		<tr>
 			<td align="right">Auction Member :</td>
 			<td> <select name="auctionmember">
-					<option value="name">Select Member Name</option>
+					<option value="name" disabled="disabled" selected="selected">Select Member: </option>
 					{% for subscription in subscriptions_list %}
-					<option value="{{subscription.member.id}}">{{ subscription.member.name }}</option>
+					<option value="{{subscription.id}}">{{subscription.id}} - {{ subscription.member.name }}</option>
 					{% endfor %}
 			</select> </td>
 		</tr>

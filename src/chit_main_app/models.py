@@ -7,8 +7,6 @@ class Group(models.Model):
     amount = models.IntegerField()
     start_date = models.DateField()
     total_months = models.IntegerField()
-#     remaining_months=models.IntegerField()
-#     total_due=models.IntegerField()
 
 class Customer(models.Model):
     name = models.CharField(max_length=100)
@@ -19,13 +17,16 @@ class Subscriptions(models.Model):
     member = models.ForeignKey(Customer)
     group = models.ForeignKey(Group)
     comments = models.CharField(max_length=1000)
-
-class Auction(models.Model):
-    subscription = models.ForeignKey(Subscriptions)
-    amount = models.IntegerField()
+    auction_amount = models.IntegerField()
     auction_date = models.DateField()
+    auction_number = models.IntegerField()
 
 class Payments(models.Model):
-    subscription = models.ForeignKey(Subscriptions)
+    member = models.ForeignKey(Customer)
     amount = models.IntegerField()
     payment_date = models.DateField()
+
+class PaymentLineItem(models.Model):
+    payment = models.ForeignKey(Payments)
+    subscription = models.ForeignKey(Subscriptions)
+    amount = models.IntegerField()

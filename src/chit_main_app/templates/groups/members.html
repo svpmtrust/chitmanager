@@ -1,7 +1,7 @@
 {% extends "site_layout.html" %}
-{% block title %}New Group{% endblock%}
+{% block title %}Group: {{group_details.name}} {% endblock%}
+{% block page_heading %}Group Details for {{group_details.name}}{% endblock%}
 {% block content %}
-<h3>Group Details</h3>
 <button onclick="window.location='/auctions/new.html?id={{group_details.id}}'">Enter Auction</button>
 <table border="1" bordercolor=lightgray cellspacing=0 cellpadding=5>
 	<tr>

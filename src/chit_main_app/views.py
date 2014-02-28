@@ -170,7 +170,7 @@ def auctionnew(request):
         group_list = Group.objects.all()
         group = Group.objects.get(id=request.GET['id'])
         subscriptions_list = Subscriptions.objects.filter(group_id=request.GET['id'])
-        auction_month = Auction.objects.filter(group_id=request.GET['id']).count() + 1
+        auction_month = Auction.objects.filter(subscription__group_id=request.GET['id']).count() + 1
         template = loader.get_template('auctions/new.html')
         context = RequestContext(request, {
             'auction_list': auction_list,
@@ -184,9 +184,8 @@ def auctionnew(request):
         auction = Auction()
         auction.amount = request.POST['amount']
         auction.auction_date = request.POST['date']
-        auction.member_id = request.POST['auctionmember']
-        auction.group_id = request.POST['group_id'] 
-        auction.month = request.POST['amount']
+        auction.subscription_id = request.POST['auctionmember']
+        auction.month = request.POST['month']
         auction.save()
         return HttpResponseRedirect('/groups/members.html?id='+ request.POST['group_id']) 
 
