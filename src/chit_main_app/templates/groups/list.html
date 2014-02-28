@@ -1,0 +1,61 @@
+<div style="padding-top:100;margin-left: 40;font-size: 20;clear: both;">
+	<a href="/groups/new">Add Group</a>
+</div>
+
+
+{% if group_list %} 
+
+
+<ul style="font-size: 20;margin-right: 40; margin-top: 59">
+<li>Group list</li>
+<li><a href="/customers/list">Customer list</a></li>
+<li style="float: right;"><a href="/logout">logout</a></li>
+</ul>
+
+
+<table style="border-color: red; margin-top: 137; margin-left: 50"
+	border="1">
+	<tr>
+		<th>Name</th>
+		<th>Amount</th>
+		<th>Start_date</th>
+		<th>Total_months</th>
+		<!--<th>Remaing_months</th>
+		<th>Total_due</th>  -->
+		<th>Action</th>
+	</tr>
+	{% for group in group_list %}
+	<tr>
+		<td><a href='/groups/members?id={{group.id}}'>{{ group.name }}</a></td>
+		<td>{{ group.amount }}</td>
+		<td>{{ group.start_date }}</td>
+		<td align="center">{{ group.total_months }}</td>
+		<!-- 
+		<td>{{ group.remaining_months }}</td>
+		<td>{{ group.total_due}}</td> -->
+		<td align="center"><a href="/groups/delete?id={{group.id}}" onclick="return confirm('Are you Sure?')">Delete</a></td>
+	</tr>
+	{% endfor %}
+</table>
+{% else %}
+<p>No groups are available.</p>
+{% endif %}
+<!--
+<table border="1">
+<tr>
+<th>UPCOMMING GROUPS</th>
+<th>STARTING DATE</th>  
+</tr>
+</table>
+-->
+<style>
+	ul {
+		list-style: none;
+	}
+	
+	ul li {
+		display: inline;
+		float: left;
+		padding-right: 30px;
+	}	
+</style>	

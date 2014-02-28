@@ -1,4 +1,5 @@
 <script type="text/javascript"src="http://code.jquery.com/jquery-1.4.2.min.js"></script>
+
 <script language="javascript" type="text/javascript">
 	
 function move_list_items(from_group_list, to_group_list)
@@ -10,26 +11,37 @@ function move_list_items(from_group_list, to_group_list)
 	{
 		$("#" + from_group_list + " option").appendTo("#" + to_group_list);
 	}
+	
+	function giveWarningBeforeAdding() {
+		return confirm("Are you sure adding Customer " + $("#to_customer_list option").text() + " to the Group "+$("#to_group_list option").text()+"?");
+	}
 </script>
+<form action="/subscriptions/new" method='post'>
+{% csrf_token %}
 <table cellpadding="5" cellspacing="5">
 	<tbody>
 		<tr>
 			<td colspan="2">
 			<select id="from_group_list" multiple="multiple"
 				name="from_group_list">
-					<option value="name">Select Group Name</option> 
+					<option value="name" disabled="disabled">Select Group Name</option>
 					{% for group in group_list %}
-					<option value="name">{{ group.name }}</option> 
+					<option value="{{group.id}}">{{ group.name }}</option>
 					{% endfor %}
 			</select>
 			</td>
 			<td colspan="2">
 			<select id="to_group_list" multiple="multiple"
 				name="to_group_list">
-					<option value="name">Add Group Name</option>
+					<option value ="{{group.id}}">{{ group.name }}</option>
 			</select>
 			</td>
+			
          </tr>
+         </tr>
+			<input name="group_id" type="hidden" value="{{group.id}}" />
+		    <tr>
+         
 		    <tr>
 		    <td><input id="moveright" type="button" value="Move Right"
 				onclick="move_list_items('from_group_list','to_group_list');"/></td>
@@ -37,32 +49,56 @@ function move_list_items(from_group_list, to_group_list)
 		    <td><input id="moverightall" type="button"
 				value="Move Right All"
 				onclick="move_list_items_all('from_group_list','to_group_list');" /></td>
+		
+		    <td><input id="moveleft" type="button" value="Move left"
+				onclick="move_list_items('to_group_list','from_group_list');"/></td>
+				
+			<td><input id="moveleftall" type="button"
+				value="Move Left All"
+				onclick="move_list_items_all('to_group_list','from_group_list');" /></td>
+		
 		</tr>
+		
 		<tr>
-			<td colspan="2"><select id="from_member_list"
-				multiple="multiple" name="from_member_list">
-					<option value="member">Select Customer Name</option> 
-					{% for member in member_list %}
-					<option value="name">{{ member.name }}</option> 
-					{% endfor %}
+			<td colspan="2"><select id="from_customer_list"
+				multiple="multiple" name="from_customer_list">
+					<option value="customer" disabled="disabled">Select Customer Name</option>
+   			{% for customer in customer_list %}
+					<option value="{{customer.id}}">{{ customer.name }}</option>
+			{% endfor %}
 			</select>
 			</td>
-			<td colspan="2"><select id="to_member_list" multiple="multiple"
-				name="to_member_list">
-					<option value="member">Add Customer Name</option>
+			<td colspan="2"><select id="to_customer_list" multiple="multiple" 
+				name="to_customer_list" required="required">
+				<option value="{{customer.id}}">{{ customer.name }}</option>
 			</select></td>
 		</tr>
+		
 		<tr>
 			<td><input id="moveright" type="button" value="Move Right"
-				onclick="move_list_items('from_member_list','to_member_list');" /></td>
+				onclick="move_list_items('from_customer_list','to_customer_list');" /></td>
 
 			<td><input id="moverightall" type="button"
 				value="Move Right All"
-				onclick="move_list_items_all('from_member_list','to_member_list');" /></td>
+				onclick="move_list_items_all('from_customer_list','to_customer_list');" /></td>
+		
+		
+		   <td><input id="moveleft" type="button" value="Move left"
+				onclick="move_list_items('to_customer_list','from_customer_list');" /></td>
+
+			<td><input id="moveleftall" type="button"
+				value="Move left All"
+				onclick="move_list_items_all('to_customer_list','from_customer_list');" /></td>
+		</tr>
+		
+		<tr>
+		<textarea rows="7" cols="50" name="comments" placeholder="Enter the comments here" >
+        </textarea>
 		</tr>
 		<tr>
-			<td><input type="button" value="Add"></td>
+			<td><input type="submit" value ="Add" onclick="return giveWarningBeforeAdding();"></td>
 
 		</tr>
 	</tbody>
 </table>
+</form>

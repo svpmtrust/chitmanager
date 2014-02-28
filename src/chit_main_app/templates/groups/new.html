@@ -5,12 +5,9 @@
 <link rel="stylesheet" href="/resources/demos/style.css"> 
  <script>
 $(function() {
-$( "#datepicker" ).datepicker();
+$( "#datepicker" ).datepicker({ dateFormat: 'yy-mm-dd' });
 });
 </script>
-
-
-
 <div
 	style="float: right; font-size: 20; padding-right: 60; margin-top: 20">
 	<a href="/logout">logout</a>
@@ -19,7 +16,7 @@ $( "#datepicker" ).datepicker();
 	style="padding-top: 100; padding-left: 300; font-size: 20; font-family: sans-serif;">New
 	group</h3>
 <center>
-	<form action="group" method="post">
+	<form action="/groups/new" method="post">
 		{% csrf_token %}
 		<table border="0" style="padding-top: 50px">
 			<tr>
@@ -34,7 +31,7 @@ $( "#datepicker" ).datepicker();
 			</tr>
 			<tr>
 				<td style="padding-top: 10" align="right">Start Date :</td>
-				<td style="padding-top: 10"><input type="text" id="datepicker" name="startdate"
+				<td style="padding-top: 10"><input type="text" id="datepicker"  name="startdate"
 					required></td>
 			</tr>
 

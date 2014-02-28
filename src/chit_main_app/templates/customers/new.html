@@ -1,12 +1,11 @@
 
 <div style="float: right;font-size: 20;padding-right: 60;margin-top: 20"><a href="/logout">logout</a></div>
 <h3
-	style="padding-top: 100; padding-left: 300; font-size: 20; font-family: sans-serif;">Member
+	style="padding-top: 100; padding-left: 300; font-size: 20; font-family: sans-serif;">Customer
 	Register form</h3>
 	
-			
 <center>
-	<form action="register" method="post">
+	<form action="/customers/new" method="post">
 		{% csrf_token %}
 		<table border="0" style="padding-top: 50px">
 			<tr>
@@ -15,7 +14,7 @@
 			</tr>
 
 			<tr>
-				<td style="padding-top: 10" align="right">Member Name :</td>
+				<td style="padding-top: 10" align="right">Customer Name :</td>
 				<td style="padding-top: 10"><input type="text" name="name" required></td>
 			</tr>
 			<tr>
