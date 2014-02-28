@@ -1,7 +1,6 @@
 from django.shortcuts import HttpResponse
 from django.template import RequestContext, loader
-from chit_main_app.models import Group,Customer, Subscriptions,Auction
-from django.contrib.auth import authenticate as dj_auth
+from chit_main_app.models import Group,Customer, Subscriptions
 from django.contrib.auth import logout as dj_logout
 from django.http.response import HttpResponseRedirect
 from django.contrib.auth.models import User
@@ -164,31 +163,27 @@ def subscriptionslist(request):
     })
     return HttpResponse(template.render(context))
 
+
 def auctionnew(request):
     if request.method == 'GET':
-        auction_list = Auction.objects.all()
-        group_list = Group.objects.all()
         group = Group.objects.get(id=request.GET['id'])
         subscriptions_list = Subscriptions.objects.filter(group_id=request.GET['id'])
-        auction_month = Auction.objects.filter(subscription__group_id=request.GET['id']).count() + 1
+        auction_month = sum(0 if s.auction_amount is None else 1 for s in subscriptions_list)+1
+        subscriptions_list = filter(lambda s:s.auction_amount is None, subscriptions_list)
         template = loader.get_template('auctions/new.html')
         context = RequestContext(request, {
-            'auction_list': auction_list,
-            'group_list' :group_list,
             'subscriptions_list':subscriptions_list,
             'group':group,
             'auction_month':auction_month,
         })
         return HttpResponse(template.render(context))
     elif request.method == 'POST':
-        auction = Auction()
-        auction.amount = request.POST['amount']
-        auction.auction_date = request.POST['date']
-        auction.subscription_id = request.POST['auctionmember']
-        auction.month = request.POST['month']
-        auction.save()
+        s = Subscriptions.objects.get(id=request.POST['auctionmember'])
+        s.auction_amount = request.POST['amount']
+        s.auction_date = request.POST['date']
+        s.auction_number = request.POST['month']
+        s.save()
         return HttpResponseRedirect('/groups/members.html?id='+ request.POST['group_id']) 
-
 
 
 def logout(request):

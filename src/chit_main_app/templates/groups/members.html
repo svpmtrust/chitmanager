@@ -24,14 +24,25 @@
 <table border="1" cellpadding=5 cellspacing=0>
 	<tr>
 		<th>Member Name</th>
+		<th>ID</th>
 		<th>Auction Date</th>
 		<th>Auction Amount</th>
+		<th>Auction Month</th>
+		<th>Amount Due</th>
+		<th>Actions</th>
 	</tr>
 	{% for member in member_list %}
 	<tr>
 		<td><a href='/customers/history'>{{ member.member.name }}</td>
-		<td>{{auction.auction_date}}</td>
-		<td>{{auction.amount}}</td>
+		<td>{{member.id}}</td>
+		<td>{{member.auction_date|default_if_none:"-"}}</td>
+		<td>{{member.auction_amount|default_if_none:"-"}}</td>
+		<td>{{member.auction_number|default:"-"}}</td>
+		<td>&nbsp;</td>
+		<td>
+			<a href='#'>Remove</a> |
+			<a href='#'>Edit Auction</a>
+		</td>
 	</tr>
 	{% endfor %}
 </table>
