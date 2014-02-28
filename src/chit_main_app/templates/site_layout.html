@@ -5,51 +5,65 @@
     <title>{% block title %}My amazing site{% endblock %}</title>
     <style>
     .heading {
-       font-size: 18pt;
        position: absolute;
        top: 1pt;
-       left: 25pt;
+       left: 5pt;
        right: 5pt;
-       height: 20pt
+       height: 40pt;
+       border-bottom: black solid thin;
+       background-color: white;
     }
     .content {
-       top: 22pt;
+       top: 50pt;
        bottom: 10pt;
        left: 5pt;
        right: 5pt;
 	   position: absolute;
+	   overflow-y: auto;
     }
     .footer {
        font-size: 9pt;
        position: absolute;
-       bottom: 10pt;
+       bottom: 0pt;
        left: 5pt;
        right: 5pt;
-       text-align: center
+       text-align: center;
+       background-color: lightblue;
+       border-top: black solid thin;
+    }
+    .title {
+    	font-size: 18pt;
+    	text-align: center;
+    	width: 100%
+    }
+    .menu {
+        border: 1px lightblue solid; 
+        padding-top: 1pt;
+        padding-bottom: 1pt;
+        padding-left: 10pt;
+        padding-right: 10pt;
+        background: lightgray;
+        text-decoration: none; 
     }
     </style>
 </head>
 
 <body>
-    <div class='heading'>Apsara Chits</div>
+    <div class='heading'><div class='title'>Apsara Chits</div>
+    <table cellspacing=1pt border=0 cellpadding=0pt>
+    	<tr>
+    		<td nowrap="nowrap">&nbsp;<a href='/groups/list' class=menu>Groups</a></td>
+    		<td><a href='/customers/list' class=menu>Customers</a>&nbsp;</td>
+    		<td width=100%>&nbsp;</td>
+    		<td>&nbsp;<a href='/logout' class=menu>Logout</a>&nbsp;</td>
+    	</tr>
+    </table>
+    </div>
     
     <div class='content'>
-    <table cellspacing=5pt border=0 cellpadding=5pt>
-    	<tr>
-    		<td bgcolor=lightblue>&nbsp;<a href='/groups/list'>Groups</a>&nbsp;</td>
-    		<td bgcolor=lightblue>&nbsp;<a href='/customers/list'>Customers</a>&nbsp;</td>
-    		<td bgcolor=lightblue width=100%>&nbsp;</td>
-    		<td bgcolor=lightblue>&nbsp;<a href='/logout'>Logout</a>&nbsp;</td>
-    	</tr>
-    	<tr>
-    	   <td colspan=4>
-    	   	    {% block content %}Your content goes here{% endblock %}
-    	   </td>
-    	</tr>
-    </table> 
+    <h3>{% block page_heading %} page_heading is missing{% endblock %}</h3>
+   	    {% block content %}Your content goes here{% endblock %}
     </div>
-    <div class='footer'>
-       <hr>Software developed by VEBSnet2 Technology Center. Copyright reserved by SVPM Charitable Trust
-    </div>
+    <div class='footer'>Software developed by VEBSnet2 Technology Center. Copyright reserved by SVPM Charitable Trust</div>
 </body>
 </html>

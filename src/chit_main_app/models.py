@@ -21,13 +21,11 @@ class Subscriptions(models.Model):
     comments = models.CharField(max_length=1000)
 
 class Auction(models.Model):
-    group = models.ForeignKey(Group)
-    member = models.ForeignKey(Customer)
+    subscription = models.ForeignKey(Subscriptions)
     amount = models.IntegerField()
     auction_date = models.DateField()
 
 class Payments(models.Model):
-    group = models.ForeignKey(Group)
-    member = models.ForeignKey(Customer)
+    subscription = models.ForeignKey(Subscriptions)
     amount = models.IntegerField()
     payment_date = models.DateField()

@@ -47,7 +47,7 @@ function giveWarningBeforeAdding() {
 			<td><select id="to_group_list" multiple="multiple"
 				name="to_group_list" style="min-height: 100pt; min-width: 75pt" >
 				{% if group.name %}
-					<option value ="{{group.id}}">{{ group.name }}</option>
+					<option value ="{{group.id}}" selected>{{ group.name }}</option>
 				{% endif %}
 			</select></td>	
          </tr>
@@ -58,7 +58,7 @@ function giveWarningBeforeAdding() {
 				style="min-height: 100pt; min-width: 75pt">
 					<option value="customer" disabled="disabled">Select Customer Name</option>
    			{% for customer in customer_list %}
-					<option value="{{customer.id}}" selected>{{ customer.name }}</option>
+					<option value="{{customer.id}}">{{ customer.name }}</option>
 			{% endfor %}
 			</select></td>
 			<td align="center" valign="middle">

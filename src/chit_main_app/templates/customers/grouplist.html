@@ -1,5 +1,6 @@
 {% extends "site_layout.html" %}
-{% block title %}New Customer{% endblock %} 
+{% block title %}{{customer_list.name}} details{% endblock %} 
+{% block page_heading %} Details of {{customer_list.name}} {% endblock %}
 {% block content %}
 <button onclick="window.location='/subscriptions/new?cid={{customer_list.id}}'">Add To Group</button>
 <p/>
