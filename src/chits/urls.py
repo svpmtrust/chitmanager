@@ -14,7 +14,7 @@ urlpatterns = patterns('',
     url(r'^groups/list$', chit_main_app.views.group_list),
     url(r'^groups/delete$', chit_main_app.views.delete_group),
     url(r'^groups/members$', chit_main_app.views.group_members),
-    url(r'^group/auction$', chit_main_app.views.auctionnew),
+    url(r'^groups/auction$', chit_main_app.views.auctionnew),
     
     # Customer Operations
     url(r'^customers/new$', chit_main_app.views.new_customer),

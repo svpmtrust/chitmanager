@@ -1,18 +1,24 @@
 {% extends "site_layout.html" %}
-{% block title %}{{customer_list.name}} details{% endblock %} 
-{% block page_heading %} Details of {{customer_list.name}} {% endblock %}
+{% block title %}{{customer_details.name}} details{% endblock %} 
+{% block page_heading %} Details of {{customer_details.name}} {% endblock %}
 {% block content %}
-<button onclick="window.location='/customers/subscription?cid={{customer_list.id}}'">Add To Group</button>
+<button onclick="window.location='/customers/subscription?cid={{customer_details.id}}'">Add To Group</button>
 <p/>
 {% if group_list %} 
 <table border="1" bordercolor=lightgray cellspacing=0 cellpadding=5>
 	<tr>
 		<th>Group Names</th>
+		<th>ID</th>
+		<th>Auction Amount</th>
+		<th>Due</th>
 	</tr>
   {% for group in group_list %}
    <tr>
-		<td>{{group.group.name}}</td>
-	</tr>
+		<td><a href="/customer/group_activity?group_id={{ group.group_id }}&cust_id={{ customer_details.id }}">{{group.group.name}}</td>
+		<td>{{group.id}}</td>
+		<td>{{group.auction_amount|default:"-"}}</td>
+		<td>&nbsp;</td>
+   </tr>
 	{% endfor %}
 </table>
 {% else %}

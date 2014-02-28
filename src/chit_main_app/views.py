@@ -28,7 +28,7 @@ def new_group(request):
         group.start_date = request.POST['startdate']
         group.total_months = request.POST['totalmonths']
         group.save()
-        return HttpResponseRedirect("/groups/list.html")
+        return HttpResponseRedirect("/groups/list")
       
 def group_list(request):
     group_list = Group.objects.all()
@@ -54,7 +54,7 @@ def group_members(request):
 def delete_group(request):
     group = Group.objects.get(id=request.GET["id"])
     group.delete()
-    return HttpResponseRedirect("/groups/list.html")
+    return HttpResponseRedirect("/groups/list")
 
 def new_customer(request):
     if request.method == 'GET':
@@ -70,7 +70,7 @@ def new_customer(request):
         member = Customer(name=request.POST['name'], mobile_number=request.POST['mobile'])
         member.user = user
         member.save()
-        return HttpResponseRedirect("/customers/list.html")
+        return HttpResponseRedirect("/customers/list")
 
 def customer_list(request):
     customer_list = Customer.objects.all()
@@ -83,7 +83,7 @@ def customer_list(request):
 def delete_customer(request):
     group = Customer.objects.get(id=request.GET["id"])
     group.delete()
-    return HttpResponseRedirect("/groups/list.html")
+    return HttpResponseRedirect("/groups/list")
 
 def customershistory(request):
     group_list = Group.objects.all()
@@ -102,10 +102,10 @@ def customerstransactions(request):
     
 def customersgroups(request): 
     group_list = Subscriptions.objects.filter(member_id=request.GET['id'])
-    customer_list = Customer.objects.get(id=request.GET['id'])
+    customer_details = Customer.objects.get(id=request.GET['id'])
     context = RequestContext(request, {
         'group_list':group_list,
-        'customer_list':customer_list
+        'customer_details':customer_details
         })
     template = loader.get_template('customers/grouplist.html')
     return HttpResponse(template.render(context))
@@ -168,7 +168,7 @@ def auctionnew(request):
         subscriptions_list = Subscriptions.objects.filter(group_id=request.GET['id'])
         auction_month = sum(0 if s.auction_amount is None else 1 for s in subscriptions_list)+1
         subscriptions_list = filter(lambda s:s.auction_amount is None, subscriptions_list)
-        template = loader.get_template('auctions/new.html')
+        template = loader.get_template('groups/auction.html')
         context = RequestContext(request, {
             'subscriptions_list':subscriptions_list,
             'group':group,
@@ -181,4 +181,4 @@ def auctionnew(request):
         s.auction_date = request.POST['date']
         s.auction_number = request.POST['month']
         s.save()
-        return HttpResponseRedirect('/groups/members.html?id='+ request.POST['group_id']) 
+        return HttpResponseRedirect('/groups/members?id='+ request.POST['group_id']) 
