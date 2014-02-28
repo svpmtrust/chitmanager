@@ -1,0 +1,44 @@
+
+<div style="padding-top:40; margin-left: 162;font-size: 20;clear: both;">
+	<a href="/subscriptions/new?gid={{group_list.id}}">Add Member</a>
+	<a href ="/auctions/new.html?id={{group_list.id}}">Enter Auctions</a>
+</div>
+
+
+<!-- for getting the group name -->
+{% if group_list %} 
+<table border="0">
+<tr> <td style="font-size: 23">Group name: {{group_list.name}}</td></tr>
+<tr> <td style="font-size: 23">Total Months: {{group_list.total_months}}</td></tr>
+<tr> <td style="font-size: 23">Start Date: {{group_list.start_date}}</td></tr>
+</table>
+
+<table style="border-color: red; margin-top: 137; margin-left: 50"
+	border="1">
+	
+	<tr>
+		<th>Member Name</th>
+		<th>Auction Date</th>
+		<th>Auction Amount</th>
+	</tr>
+  {% for member in member_list %}
+   <tr>
+		<td><a href='/customers/history'>{{ member.member.name }}</td>
+		<td>{{auction.auction_date}}</td>
+
+	</tr>
+	{% endfor %}
+</table>
+{% endif %}
+
+<style>
+	ul {
+		list-style: none;
+	}
+	
+	ul li {
+		display: inline;
+		float: left;
+		padding-right: 30px;
+	}	
+</style>	
