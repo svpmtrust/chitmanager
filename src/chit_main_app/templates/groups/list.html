@@ -2,18 +2,17 @@
 {% block title %}Group List{% endblock %}
 
 {% block content %}
-
+<p/>
 <button onclick="window.location='/groups/new'">New Group</button>
 {% if group_list %} 
- <table style="border-color: red; margin-top: 137; margin-left: 50"
-	border="1">
+ <table border="1" cellspacing=0 cellpadding=5 bordercolor=lightgray>
 	<tr>
 		<th>Name</th>
 		<th>Amount</th>
-		<th>Start_date</th>
-		<th>Total_months</th>
-		<!--<th>Remaing_months</th>
-		<th>Total_due</th>  -->
+		<th>Start Date</th>
+		<th>Total Months</th>
+		<th>Remaining Months</th>
+		<th>Total Due</th>
 		<th>Action</th>
 	</tr>
 	{% for group in group_list %}
@@ -25,6 +24,8 @@
 		<!-- 
 		<td>{{ group.remaining_months }}</td>
 		<td>{{ group.total_due}}</td> -->
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
 		<td align="center"><a href="/groups/delete?id={{group.id}}" onclick="return confirm('Are you Sure?')">Delete</a></td>
 	</tr>
 	{% endfor %}

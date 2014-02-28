@@ -1,44 +1,42 @@
-
-<div style="padding-top:40; margin-left: 162;font-size: 20;clear: both;">
-	<a href="/subscriptions/new?gid={{group_list.id}}">Add Member</a>
-	<a href ="/auctions/new.html?id={{group_list.id}}">Enter Auctions</a>
-</div>
-
-
-<!-- for getting the group name -->
-{% if group_list %} 
-<table border="0">
-<tr> <td style="font-size: 23">Group name: {{group_list.name}}</td></tr>
-<tr> <td style="font-size: 23">Total Months: {{group_list.total_months}}</td></tr>
-<tr> <td style="font-size: 23">Start Date: {{group_list.start_date}}</td></tr>
+{% extends "site_layout.html" %}
+{% block title %}New Group{% endblock%}
+{% block content %}
+<h3>Group Details</h3>
+<button onclick="window.location='/auctions/new.html?id={{group_details.id}}'">Enter Auction</button>
+<table border="1" bordercolor=lightgray cellspacing=0 cellpadding=5>
+	<tr>
+		<td align=right>Name</td>
+		<td>{{group_details.name}}</td>
+	</tr>
+	<tr>
+		<td align=right>Months</td>
+		<td>{{group_details.total_months}}</td>
+	</tr>
+	<tr>
+		<td align=right>Start Date</td>
+		<td>{{group_details.start_date}}</td>
+	</tr>
 </table>
 
-<table style="border-color: red; margin-top: 137; margin-left: 50"
-	border="1">
-	
+<h3>Group Members</h3>
+<button onclick="window.location='/subscriptions/new?gid={{group_details.id}}'">Add Member</button>
+{% if member_list %}
+<table border="1" cellpadding=5 cellspacing=0>
 	<tr>
 		<th>Member Name</th>
 		<th>Auction Date</th>
 		<th>Auction Amount</th>
 	</tr>
-  {% for member in member_list %}
-   <tr>
+	{% for member in member_list %}
+	<tr>
 		<td><a href='/customers/history'>{{ member.member.name }}</td>
 		<td>{{auction.auction_date}}</td>
-
+		<td>{{auction.amount}}</td>
 	</tr>
 	{% endfor %}
 </table>
+{% else %}
+<br />
+No members enrolled in this group yet.
 {% endif %}
-
-<style>
-	ul {
-		list-style: none;
-	}
-	
-	ul li {
-		display: inline;
-		float: left;
-		padding-right: 30px;
-	}	
-</style>	
+{% endblock %}

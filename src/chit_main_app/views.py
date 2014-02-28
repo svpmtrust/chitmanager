@@ -7,6 +7,7 @@ from django.http.response import HttpResponseRedirect
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from django.template.response import TemplateResponse
+import itertools
 
 
 @login_required
@@ -43,11 +44,11 @@ def groupslist(request):
 def memberslist(request):
     try:
         member_list = Subscriptions.objects.filter(group_id=request.GET['id'])
-        group_list = Group.objects.get(id=request.GET['id'])
+        group_details = Group.objects.get(id=request.GET['id'])
         template = loader.get_template('groups/members.html')
         context = RequestContext(request, {
             'member_list': member_list,
-            'group_list':group_list,
+            'group_details':group_details,
               })
         return HttpResponse(template.render(context))        
     except Subscriptions.DoesNotExist:
@@ -139,37 +140,21 @@ def subscriptionnew(request):
             })
         return HttpResponse(template.render(context)) 
     elif request.method == 'POST':
-        customer = Customer.objects.get(id=request.POST['to_customer_list'])
-        subscription = Subscriptions()
-        subscription.group_id = request.POST['group_id']
-        subscription.member = customer
-        subscription.comments = request.POST['comments']
-        subscription.save()
-        return HttpResponseRedirect('/subscriptions/list.html')
-#         return HttpResponseRedirect('/groups/members.html?id=' + request.POST['group_id'])
+        customer_list = request.POST.getlist('to_customer_list')
+        group_list = request.POST.getlist('to_group_list')
+        for c,g in itertools.product(customer_list, group_list):
+            subscription = Subscriptions()
+            subscription.group_id = g
+            subscription.member_id = c
+            subscription.comments = request.POST['comments']
+            subscription.save()
+        if 'group_id' in request.POST:
+            return HttpResponseRedirect('/groups/members?id=' + request.POST['group_id'])
+        elif 'customer_id' in request.POST:
+            return HttpResponseRedirect('/customers/grouplist?id=' + request.POST['customer_id'])
+        else:
+            return HttpResponse("We don't know your origin")
       
-# def subscriptionnewgroup(request):
-#     if request.method == 'GET':
-#         customer_list = Customer.objects.all()
-#         group_list = Group.objects.all()
-#         customer = Customer.objects.filter(id=request.GET['id'])
-#         template = loader.get_template('subscriptions/new.html')
-#         context = RequestContext(request, {
-#             'customer_list': customer_list,
-#             'group_list':group_list,
-#             'customer':customer
-#         })
-#         return HttpResponse(template.render(context)) 
-#     elif request.method == 'POST':
-#         group = Group.objects.get(id=request.POST['to_group_list'])
-#         customer = Customer.objects.get(id=request.POST['to_customer_list'])
-#         subscription = Subscriptions()
-#         subscription.group = group
-#         subscription.member = customer
-#         subscription.comments = request.POST['comments']
-#         subscription.save()
-#         return HttpResponseRedirect('/groups/members.html?id='+ request.POST['group_id'])
-     
 def subscriptionslist(request):
     subscription_list = Subscriptions.objects.all()
     template = loader.get_template('subscriptions/list.html')

@@ -1,11 +1,11 @@
-<div style="padding-top:40; margin-left: 162;font-size: 20;clear: both;">
-	<a href="/subscriptions/new?cid={{customer_list.id}}">Add TO GROUP</a>
-</div>
-
+{% extends "site_layout.html" %}
+{% block title %}New Customer{% endblock %} 
+{% block content %}
+<button onclick="window.location='/subscriptions/new?cid={{customer_list.id}}'">Add To Group</button>
+<p/>
 {% if group_list %} 
 <table style="border-color: red; margin-top: 137; margin-left: 50"
 	border="1">
-	
 	<tr>
 		<th>Group Names</th>
 	</tr>
@@ -15,4 +15,7 @@
 	</tr>
 	{% endfor %}
 </table>
+{% else %}
+Not in any groups yet
 {% endif %}
+{% endblock %}
