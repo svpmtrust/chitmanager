@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="/style.css" />
+    <title>{% block title %}My amazing site{% endblock %}</title>
+    <style>
+    .heading {
+       font-size: 18pt;
+       position: absolute;
+       top: 1pt;
+       left: 25pt;
+       right: 5pt;
+       height: 20pt
+    }
+    .content {
+       top: 22pt;
+       bottom: 10pt;
+       left: 5pt;
+       right: 5pt;
+	   position: absolute;
+    }
+    .footer {
+       font-size: 9pt;
+       position: absolute;
+       bottom: 10pt;
+       left: 5pt;
+       right: 5pt;
+       text-align: center
+    }
+    </style>
+</head>
+
+<body>
+    <div class='heading'>Apsara Chits</div>
+    
+    <div class='content'>
+    <table cellspacing=5pt border=0 cellpadding=5pt>
+    	<tr>
+    		<td bgcolor=lightblue>&nbsp;<a href='/groups/list'>Groups</a>&nbsp;</td>
+    		<td bgcolor=lightblue>&nbsp;Customers</td>
+    		<td bgcolor=lightblue width=100%>&nbsp;</td>
+    		<td bgcolor=lightblue>&nbsp;<a href='/logout'>Logout</a>&nbsp;</td>
+    	</tr>
+    	<tr>
+    	   <td colspan=3>
+    	   	    {% block content %}Your content goes here{% endblock %}
+    	   </td>
+    	</tr>
+    </table> 
+    </div>
+    <div class='footer'>
+       <hr>Software developed by VEBSnet2 Technology Center. Copyright reserved by SVPM Charitable Trust
+    </div>
+</body>
+</html>

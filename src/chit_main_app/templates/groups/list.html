@@ -1,19 +1,11 @@
-<div style="padding-top:100;margin-left: 40;font-size: 20;clear: both;">
-	<a href="/groups/new">Add Group</a>
-</div>
+{% extends "site_layout.html" %}
+{% block title %}Group List{% endblock %}
 
+{% block content %}
 
+<button onclick="window.location='/groups/new'">New Group</button>
 {% if group_list %} 
-
-
-<ul style="font-size: 20;margin-right: 40; margin-top: 59">
-<li>Group list</li>
-<li><a href="/customers/list">Customer list</a></li>
-<li style="float: right;"><a href="/logout">logout</a></li>
-</ul>
-
-
-<table style="border-color: red; margin-top: 137; margin-left: 50"
+ <table style="border-color: red; margin-top: 137; margin-left: 50"
 	border="1">
 	<tr>
 		<th>Name</th>
@@ -38,7 +30,7 @@
 	{% endfor %}
 </table>
 {% else %}
-<p>No groups are available.</p>
+<p>No groups are present right now.</p>
 {% endif %}
 <!--
 <table border="1">
@@ -48,14 +40,4 @@
 </tr>
 </table>
 -->
-<style>
-	ul {
-		list-style: none;
-	}
-	
-	ul li {
-		display: inline;
-		float: left;
-		padding-right: 30px;
-	}	
-</style>	
+{% endblock %}

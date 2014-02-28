@@ -1,12 +1,14 @@
 from django.conf.urls import patterns, url
 # from django.contrib import admin
 import chit_main_app.views
+from django.views.generic.base import RedirectView
 # admin.autodiscover()
 
 urlpatterns = patterns('',
-    
+    url(r'^$', RedirectView.as_view(url='/home')),
     url(r'^login/$', 'django.contrib.auth.views.login'),
-#     url(r'^groups/new', chit_main_app.views.groupsnew),
+    url(r'^home/$', chit_main_app.views.homepage),
+     url(r'^groups/new', chit_main_app.views.groupsnew),
     url(r'^groups/list', chit_main_app.views.groupslist),
     url(r'^groups/delete', chit_main_app.views.groupsdelete),
     url(r'^groups/members', chit_main_app.views.memberslist),

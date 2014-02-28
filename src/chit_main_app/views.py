@@ -5,7 +5,18 @@ from django.contrib.auth import authenticate as dj_auth
 from django.contrib.auth import logout as dj_logout
 from django.http.response import HttpResponseRedirect
 from django.contrib.auth.models import User
+from django.contrib.auth.decorators import login_required
+from django.template.response import TemplateResponse
 
+
+@login_required
+def homepage(request):
+    if request.user.is_superuser:
+        template = 'admin/home.html'
+    else:
+        template = 'admin/user.html'
+
+    return TemplateResponse(request, template)
 
 def groupsnew(request):
     context = RequestContext(request)
