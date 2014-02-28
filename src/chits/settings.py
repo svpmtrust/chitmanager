@@ -26,17 +26,18 @@ TEMPLATE_DEBUG = True
 
 ALLOWED_HOSTS = []
 
+LOGIN_REDIRECT_URL = '/groups/'
 
 # Application definition
 
 INSTALLED_APPS = (
+    'chit_main_app',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
-    'django.contrib.staticfiles',
-    'chit_main_app',
+    'django.contrib.staticfiles'
    )
 
 MIDDLEWARE_CLASSES = (
@@ -60,12 +61,20 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME':'chitmanager',
-        'USER': 'root',
-        'PASSWORD': 'karthik',
+        'USER': 'chitmgr',
+        'PASSWORD': 'chitmgr',
         'HOST': '',
         'PORT': '',
     }
     }
+
+if os.environ.get('SQLITE','False') == 'True':
+    DATABASES['default'] = {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': os.path.join(BASE_DIR, '..', 'chit_data.sqlite3'),
+    }
+
+
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.6/topics/i18n/

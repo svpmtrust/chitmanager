@@ -6,30 +6,6 @@ from django.contrib.auth import logout as dj_logout
 from django.http.response import HttpResponseRedirect
 from django.contrib.auth.models import User
 
-# Create your views here.
-
-def login(request):
-    context = RequestContext(request)
-    if request.method == 'POST':
-        user = dj_auth(username=request.POST['username'],
-                       password=request.POST['password'])
-        if user is not None:
-            if user.is_active:
-                if user.is_superuser:
-                    template = loader.get_template('admin/home.html')
-                    return HttpResponse(template.render(context))
-                else:
-                    template = loader.get_template('admin/user.html')
-                    return HttpResponse(template.render(context))
-            else:
-                context['error'] = 'Your account is disabled'
-        else:
-            context['error'] = 'Incorrect username or password'
-    else:
-        context['error'] = None
-        
-    template = loader.get_template('admin/loginform.html')
-    return HttpResponse(template.render(context))
 
 def groupsnew(request):
     context = RequestContext(request)

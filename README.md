@@ -1,0 +1,4 @@
+chitmanager
+===========
+
+Chit Management Software
