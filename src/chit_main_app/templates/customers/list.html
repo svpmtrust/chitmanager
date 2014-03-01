@@ -17,9 +17,11 @@
 			<td><a href="/customers/grouplist?id={{customer.id}}">{{ customer.name }}</a></td>
 			<td>{{ customer.mobile_number }}</td>
 			<td align="center">
-				<a href="/customers/delete?id={{customer.id}}" onclick="return confirm('Are you sure?')"><img src='/static/remove.png' height=24pt width=24pt/></a>
-				<a href='#'><img src='/static/edit.png' height=24pt width=24pt/></a>
-				<a href='#'><img src='/static/write.png' height=24pt width=24pt/></a>
+				<a href="/customers/delete?id={{customer.id}}" onclick="return confirm('Are you sure?')">
+				    <img src='/static/remove.png' class='action_icon'/>
+				</a>
+				<a href='#'><img src='/static/edit.png' class='action_icon'/></a>
+				<a href='#'><img src='/static/write.png' class='action_icon'/></a>
 			</td>
 		</tr>
 		{% endfor %}

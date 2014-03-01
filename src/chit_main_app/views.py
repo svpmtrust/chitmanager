@@ -1,6 +1,7 @@
 from django.shortcuts import HttpResponse
 from django.template import RequestContext, loader
-from chit_main_app.models import Group,Customer, Subscriptions
+from chit_main_app.models import Group,Customer, Subscriptions, Journal,\
+    JournalItem
 from django.http.response import HttpResponseRedirect
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
@@ -27,6 +28,7 @@ def new_group(request):
         group.amount = request.POST['amount']
         group.start_date = request.POST['startdate']
         group.total_months = request.POST['totalmonths']
+        group.commision = request.POST['commission']
         group.save()
         return HttpResponseRedirect("/groups/list")
       
@@ -162,7 +164,7 @@ def subscriptionslist(request):
     return HttpResponse(template.render(context))
 
 
-def auctionnew(request):
+def new_auction(request):
     if request.method == 'GET':
         group = Group.objects.get(id=request.GET['id'])
         subscriptions_list = Subscriptions.objects.filter(group_id=request.GET['id'])
@@ -176,9 +178,42 @@ def auctionnew(request):
         })
         return HttpResponse(template.render(context))
     elif request.method == 'POST':
+        # Mark the subscription for the auction
         s = Subscriptions.objects.get(id=request.POST['auctionmember'])
-        s.auction_amount = request.POST['amount']
+        s.auction_amount = float(request.POST['amount'])
         s.auction_date = request.POST['date']
         s.auction_number = request.POST['month']
         s.save()
+        
+        g = s.group
+        
+        monthly_due = g.amount / g.total_months
+        dividend = (s.auction_amount - (g.amount * g.commision)/100) / g.total_months
+        due_amount = monthly_due - dividend
+        
+        # Create main journal Entries
+        j = Journal()
+        j.entry_date = s.auction_date
+        j.comments = 'No Comments'
+        j.entry_type = j.AUCTION
+        j.save()
+        
+        # Create due amounts after subtracting dividends
+        for s1 in Subscriptions.objects.filter(group_id=s.group_id):
+            j1 = JournalItem()
+            j1.txn = j
+            j1.debit = due_amount
+            j1.credit = 0
+            j1.subscription_id = s1.id
+            j1.save()
+        
+        
+        # Create an entry for the auction amount to be given
+        j1 = JournalItem()
+        j1.txn = j
+        j1.subscription_id = s.id
+        j1.credit = g.amount - s.auction_amount
+        j1.debit = 0
+        j1.save()
+        
         return HttpResponseRedirect('/groups/members?id='+ request.POST['group_id']) 

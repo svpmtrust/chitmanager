@@ -39,3 +39,7 @@ overflow-y: auto;
     background: lightgray;
     text-decoration: none; 
 }
+.action_icon {
+	width: 16pt;
+	height: 16pt;
+}
