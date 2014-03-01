@@ -1,0 +1,96 @@
+{% extends "site_layout.html" %}
+{% block title %}New Subscription{% endblock %} 
+{% block page_heading %}New Subscription{% endblock %} 
+{% block content %}
+<script type="text/javascript"src="http://code.jquery.com/jquery-1.4.2.min.js"></script>
+<script language="javascript" type="text/javascript">
+function move_list_items(from_group_list, to_group_list) {
+	$("#" + from_group_list + "  option:selected").appendTo("#" + to_group_list);
+}
+function move_list_items_all(from_group_list, to_group_list) {
+	$("#" + from_group_list + " option").appendTo("#" + to_group_list);
+}	
+function giveWarningBeforeAdding() {
+	return confirm("Are you sure adding Customer " + $("#to_customer_list option").text() + " to the Group "+$("#to_group_list option").text()+"?");
+}
+</script>
+<form action="/customers/subscription" method='post'>
+    {% if group.name %}
+		<input name="group_id" type="hidden" value="{{group.id}}" />
+	{% endif %}
+	{% if customer.name %}
+		<input name="customer_id" type="hidden" value="{{customer.id}}" />
+	{% endif %}
+	{% csrf_token %}
+	<table cellpadding="5" cellspacing="5">
+		<tr>
+		    <td valign="top"> Groups </td>
+			<td><select id="from_group_list" multiple="multiple"
+				name="from_group_list" style="min-height: 100pt">
+					<option value="name" disabled="disabled">Select Group Name</option>
+					{% for group in group_list %}
+						<option value="{{group.id}}">{{ group.name }}</option>
+					{% endfor %}
+			</select></td>
+			<td align="center" valign="middle">
+				<input id="moveright" type="button" value=">"
+				onclick="move_list_items('from_group_list','to_group_list');"/><br/>
+
+		    <input id="moverightall" type="button" value=">>"
+				onclick="move_list_items_all('from_group_list','to_group_list');" /><p></p>
+		
+		    <input id="moveleft" type="button" value="<"
+				onclick="move_list_items('to_group_list','from_group_list');"/><br/>
+			<input id="moveleftall" type="button"
+				value="<<"
+				onclick="move_list_items_all('to_group_list','from_group_list');" />
+			</td>
+			<td><select id="to_group_list" multiple="multiple"
+				name="to_group_list" style="min-height: 100pt; min-width: 75pt" >
+				{% if group.name %}
+					<option value ="{{group.id}}" selected>{{ group.name }}</option>
+				{% endif %}
+			</select></td>	
+         </tr>
+		 <tr>
+		    <td valign="top"> Members </td>
+			<td><select id="from_customer_list"
+				multiple="multiple" name="from_customer_list" 
+				style="min-height: 100pt; min-width: 75pt">
+					<option value="customer" disabled="disabled">Select Customer Name</option>
+   			{% for customer in customer_list %}
+					<option value="{{customer.id}}">{{ customer.name }}</option>
+			{% endfor %}
+			</select></td>
+			<td align="center" valign="middle">
+				<input id="moveright" type="button" value=">"
+					onclick="move_list_items('from_customer_list','to_customer_list');" /><br/>
+				<input id="moverightall" type="button"
+					value=">>"
+					onclick="move_list_items_all('from_customer_list','to_customer_list');" /><p></p>
+			    <input id="moveleft" type="button" value="<"
+					onclick="move_list_items('to_customer_list','from_customer_list');" /><br/>
+				<input id="moveleftall" type="button"
+					value="<<"
+					onclick="move_list_items_all('to_customer_list','from_customer_list');" />
+			</td>
+			<td><select id="to_customer_list" multiple="multiple" 
+				name="to_customer_list" required="required"
+				style="min-height: 100pt; min-width: 75pt">
+				{% if customer.name %}
+				<option value="{{customer.id}}" selected>{{ customer.name }}</option>
+				{% endif %}
+			</select></td>
+		</tr>
+		<tr>
+			<td valign="top">Comments</td>
+			<td colspan=3>
+			<textarea rows="7" cols="50" name="comments" placeholder="Enter the comments here" ></textarea>
+	        </td>
+		</tr>
+		<tr>
+			<td><input type="submit" value ="Add" onclick="return giveWarningBeforeAdding();"></td>
+		</tr>
+	</table>
+</form>
+{% endblock %}

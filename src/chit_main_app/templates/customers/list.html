@@ -1,43 +1,42 @@
-<div style="padding-top:40; margin-left: 162;font-size: 20;clear: both;">
-	<a href="/customers/new">Add Customer</a>
-</div>
+{% extends "site_layout.html" %}
+{% load myfilter %}
+{% block title %}Customer List{% endblock %}
+{% block page_heading %}Customer List{% endblock %}
 
+{% block content %}
+<script>
+function change_mobile(id) {
+	new_mobile = prompt('Enter new mobile number: ')
+	if (new_mobile) {
+		window.location = '/customers/mobile_number?id='+id+'&new_number='+new_mobile
+	}
+	return false
+}
+
+</script>
+<button onclick="window.location='/customers/new'">Add Customer</button>
 {% if customer_list %} 
-
-
-<ul style="font-size: 20;margin-right: 40; margin-top: 40">
-<li><a href="/groups/list">Group list</a></li>
-<li>Customer list</li>
-<li style="float: right;"><a href="/logout">logout</a></li>
-</ul>
-
-
-	<table style="border-color: activecaption;margin-top: 50;margin-left: 162" border="1">
+	<table border="1" cellspacing=0 cellpadding=5>
 		<tr>
+			<th>&nbsp</th>
 			<th>Name</th>
 			<th>Mobile_number</th>
-			<th>Action</th>
+			<th>Due</th>
 		</tr>
 		{% for customer in customer_list %}
 		<tr>
+			<td align="center">
+				<a href="/customers/delete?id={{customer.id}}" onclick="return confirm('Are you sure?')">
+				    <img src='/static/remove.png' class='action_icon'/>
+				</a>
+			</td>
 			<td><a href="/customers/grouplist?id={{customer.id}}">{{ customer.name }}</a></td>
-			<td>{{ customer.mobile_number }}</td>
-			<td align="center"><a href="/customers/delete?id={{group.id}}" onclick="return confirm('Are you sure?')">Delete</a></td>
+			<td>{{ customer.mobile_number }} <a href='#' onclick="return change_mobile({{ customer.id }})"><img src='/static/edit.png' class='action_icon'/></a></td>
+			<td><a href="/customers/grouplist?id={{customer.id}}">{{ due_amounts|get_item:customer.id }}</a></td>
 		</tr>
 		{% endfor %}
 	</table>
-		{% else %}
-		<p>No Customers are available.</p>
-		{% endif %}
-		
-<style>
-	ul {
-		list-style: none;
-	}
-	
-	ul li {
-		display: inline;
-		float: left;
-		padding-right: 30px;
-	}	
-</style>		
+{% else %}
+	<p>No Customers are available.</p>
+{% endif %}	
+{% endblock %}

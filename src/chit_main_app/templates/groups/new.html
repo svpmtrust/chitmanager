@@ -1,5 +1,6 @@
 {% extends "site_layout.html" %}
 {% block title %}New Group{% endblock %}
+{% block page_heading %}New Group{% endblock %}
 
 {% block content %}
 <script type="text/javascript" src="http://code.jquery.com/jquery-1.4.2.min.js"></script>
@@ -12,32 +13,47 @@ $(function() {
 $( "#datepicker" ).datepicker({ dateFormat: 'yy-mm-dd' });
 });
 </script>
-<h3>New group</h3>
 	<form action="/groups/new" method="post">
 		{% csrf_token %}
+		{% if group_details.id %}
+			<input type='hidden' name='id' value={{group_details.id}}>
+		{% endif %}
 		<table border="0">
 			<tr>
 				<td align="right">Group Name :</td>
-				<td><input type="text" name="groupname" required placeholder='Enter Group Name'></td>
+				<td><input type="text" name="groupname" required
+					value="{{group_details.name}}"
+					placeholder='Enter Group Name'></td>
 			</tr>
 			<tr>
 				<td style="padding-top: 10" align="right">Amount :</td>
-				<td style="padding-top: 10"><input type="text" name="amount" placeholder='Enter Amount'
+				<td style="padding-top: 10"><input type="text" name="amount" 
+					placeholder='Enter Amount'
+					value="{{group_details.amount|default:''}}"
 					required></td>
 			</tr>
 			<tr>
 				<td style="padding-top: 10" align="right">Start Date :</td>
 				<td style="padding-top: 10"><input type="text" id="datepicker"  name="startdate"
+					value="{{group_details.start_date|date:'Y-m-d'}}"
 					required  placeholder='Select Group Start Date'></td>
 			</tr>
 			<tr>
 				<td style="padding-top: 10" align="right">Total Months :</td>
 				<td style="padding-top: 10"><input type="text"
+				    value="{{group_details.total_months|default:''}}"
 					name="totalmonths" required  placeholder='Number of Months'></td>
 			</tr>
 			<tr>
+				<td style="padding-top: 10" align="right">Commision :</td>
+				<td style="padding-top: 10"><input type="text"
+					name="commission" required
+					value="{{group_details.commision|default:'5.0'}}"
+					placeholder='Commission for the group'></td>
+			</tr>
+			<tr>
 				<td style="padding-top: 20; padding-left: 130;" colspan="2"><input
-					type="submit" value="Add Group"></td>
+					type="submit" value="Save Group"></td>
 			</tr>
 		</table>
 	</form>

@@ -1,44 +1,82 @@
-
-<div style="padding-top:40; margin-left: 162;font-size: 20;clear: both;">
-	<a href="/subscriptions/new?gid={{group_list.id}}">Add Member</a>
-	<a href ="/auctions/new.html?id={{group_list.id}}">Enter Auctions</a>
-</div>
-
-
-<!-- for getting the group name -->
-{% if group_list %} 
-<table border="0">
-<tr> <td style="font-size: 23">Group name: {{group_list.name}}</td></tr>
-<tr> <td style="font-size: 23">Total Months: {{group_list.total_months}}</td></tr>
-<tr> <td style="font-size: 23">Start Date: {{group_list.start_date}}</td></tr>
+{% extends "site_layout.html" %}
+{% load myfilter %}
+{% block title %}Group: {{group_details.name}} {% endblock%}
+{% block page_heading %}Group Details for {{group_details.name}}{% endblock%}
+{% block content %}
+<table border="1" bordercolor=lightgray cellspacing=0 cellpadding=5>
+	<tr>
+		<td class=label>Name</td>
+		<td>{{group_details.name}}</td>
+	</tr>
+	<tr>
+		<td class=label>Months</td>
+		<td>{{group_details.total_months}} ({{remaining_months}} left)</td>
+	</tr>
+	<tr>
+		<td class=label>Commission</td>
+		<td>{{group_details.commision}}%</td>
+	</tr>
+	<tr>
+		<td class=label>Start Date</td>
+		<td>{{group_details.start_date}}</td>
+	</tr>
+	<tr>
+		<td class=label>Due Amount</td>
+		<td>{{total_due_amount}}</td>
+	</tr>
+	<tr>
+		<td align='right' colspan=2><a href="/groups/new?id={{group_details.id}}">Edit</a></td>
+	</tr>
 </table>
 
-<table style="border-color: red; margin-top: 137; margin-left: 50"
-	border="1">
-	
+<script>
+function remove_subscription(id) {
+	x = confirm('Are you sure you want to remove the subscription?')
+	if (x) {
+		window.location = '/groups/remove_subscription?return_to=group&id='+id
+	}
+	else {
+		return false;
+	}
+}
+</script>
+
+<h3>Group Members</h3>
+<button onclick="window.location='/customers/subscription?gid={{group_details.id}}'">Add Member</button>
+{% if member_list %}
+<button onclick="window.location='/groups/auction?id={{group_details.id}}'">Enter Auction</button>
+<table border="1" cellpadding=5 cellspacing=0>
 	<tr>
+		<th>&nbsp;</th>
 		<th>Member Name</th>
+		<th>ID</th>
 		<th>Auction Date</th>
 		<th>Auction Amount</th>
+		<th>Auction Month</th>
+		<th>Amount Due</th>
+		<th>Actions</th>
 	</tr>
-  {% for member in member_list %}
-   <tr>
-		<td><a href='/customers/history'>{{ member.member.name }}</td>
-		<td>{{auction.auction_date}}</td>
-
+	{% for subscription in member_list %}
+	<tr>
+		<td>
+		  <a href='#' onclick="remove_subscription({{subscription.id}})">
+		    <img src='/static/remove.png' class='action_icon'/>
+		  </a>
+		</td>
+		<td><a href='/customers/group_activity?subscription_id={{subscription.id}}&return_to=group'>{{ subscription.member.name }}</td>
+		<td>{{subscription.id}}</td>
+		<td>{{subscription.auction_date|default_if_none:"-"}}</td>
+		<td>{{subscription.auction_amount|default_if_none:"-"}}</td>
+		<td>{{subscription.auction_number|default:"-"}}</td>
+		<td>{{due_amounts|get_item:subscription.id}}</td>
+		<td>
+			<a href='#'>Edit Auction</a>
+		</td>
 	</tr>
 	{% endfor %}
 </table>
+{% else %}
+<br />
+No members enrolled in this group yet.
 {% endif %}
-
-<style>
-	ul {
-		list-style: none;
-	}
-	
-	ul li {
-		display: inline;
-		float: left;
-		padding-right: 30px;
-	}	
-</style>	
+{% endblock %}

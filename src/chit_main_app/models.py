@@ -7,27 +7,38 @@ class Group(models.Model):
     amount = models.IntegerField()
     start_date = models.DateField()
     total_months = models.IntegerField()
-#     remaining_months=models.IntegerField()
-#     total_due=models.IntegerField()
+    commision = models.FloatField()
 
 class Customer(models.Model):
     name = models.CharField(max_length=100)
     mobile_number = models.BigIntegerField()
     user = models.OneToOneField(User)
-    
+
 class Subscriptions(models.Model):
     member = models.ForeignKey(Customer)
     group = models.ForeignKey(Group)
     comments = models.CharField(max_length=1000)
+    auction_amount = models.IntegerField(null=True)
+    auction_date = models.DateField(null=True)
+    auction_number = models.IntegerField(null=True)
+    
+class Journal(models.Model):
+    member = models.ForeignKey(Customer, null=True)
+    amount = models.IntegerField(null=True)
+    entry_date = models.DateField()
+    comment = models.CharField(max_length=1000)
+    AUCTION = 'A'
+    PAYMENT = 'P'
+    DISBURSEMENT = 'D'
+    ENTRY_TYPES = (
+        (AUCTION, 'Auction'),
+        (PAYMENT, 'Payment'),
+        (DISBURSEMENT, 'Disbursement')
+    )
+    entry_type = models.CharField(max_length=10, choices=ENTRY_TYPES)
 
-class Auction(models.Model):
-    group = models.ForeignKey(Group)
-    member = models.ForeignKey(Customer)
-    amount = models.IntegerField()
-    auction_date = models.DateField()
-
-class Payments(models.Model):
-    group = models.ForeignKey(Group)
-    member = models.ForeignKey(Customer)
-    amount = models.IntegerField()
-    payment_date = models.DateField()
+class JournalItem(models.Model):
+    txn = models.ForeignKey(Journal)
+    subscription = models.ForeignKey(Subscriptions)
+    debit = models.IntegerField()
+    credit = models.IntegerField()

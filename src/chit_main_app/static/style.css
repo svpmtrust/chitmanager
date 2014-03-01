@@ -1,0 +1,57 @@
+.heading {
+   position: absolute;
+   top: 1pt;
+   left: 5pt;
+   right: 5pt;
+   height: 45pt;
+   border-bottom: black solid thin;
+   background-color: white;
+   font-size: 16pt;
+}
+.content {
+   top: 46pt;
+   bottom: 12pt;
+   left: 5pt;
+   right: 5pt;
+   position: absolute;
+   overflow-y: auto;
+   font-size: 14pt;
+   border: lightblue solid medium;
+   padding: 5pt;
+}
+.footer {
+   font-size: 10pt;
+   position: absolute;
+   bottom: 0pt;
+   left: 5pt;
+   right: 5pt;
+   text-align: center;
+   background-color: lightblue;
+   border-top: black solid thin;
+}
+.title {
+	font-size: 18pt;
+	text-align: center;
+	width: 100%
+}
+.menu {
+    border: 1px lightblue solid; 
+    padding-top: 1pt;
+    padding-bottom: 1pt;
+    padding-left: 10pt;
+    padding-right: 10pt;
+    background: lightgray;
+    text-decoration: none; 
+}
+.action_icon {
+	width: 12pt;
+	height: 12pt;
+}
+.label {
+	color: gray;
+	text-align: right;	
+}
+button, submit {
+	font-size: 12pt;
+	background-color: lightblue;
+}

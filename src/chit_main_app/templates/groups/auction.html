@@ -1,0 +1,46 @@
+{% extends "site_layout.html" %}
+{% block title %}New Auction{% endblock%}
+{% block page_heading %} Enter Auction Details for group: {{group.name}}{% endblock%}
+{% block content %}
+<script type="text/javascript" src="http://code.jquery.com/jquery-1.4.2.min.js"></script>
+<link rel="stylesheet" href="http://code.jquery.com/ui/1.10.4/themes/smoothness/jquery-ui.css">
+<script src="http://code.jquery.com/jquery-1.9.1.js"></script>
+<script src="http://code.jquery.com/ui/1.10.4/jquery-ui.js"></script>
+<link rel="stylesheet" href="/resources/demos/style.css"> 
+ <script>
+$(function() {
+$( "#datepicker" ).datepicker({ dateFormat: 'yy-mm-dd' });
+});
+</script>
+<form action="/groups/auction" method="post">
+	<input name="group_id" type="hidden" value="{{group.id}}" />
+	{% csrf_token %}
+	<table border=0 cellspacing=5pt>
+		<tr>
+			<td align="right">Auction amount :</td>
+			<td><input type="text" name="amount" required></td>
+		</tr>
+		<tr>
+			<td align="right">Auction Date :</td>
+			<td><input type="text" id="datepicker"  name="date" required></td>
+		</tr>
+		<tr>
+			<td align="right">Auction Member :</td>
+			<td> <select name="auctionmember">
+					<option value="name" disabled="disabled" selected="selected">Select Member: </option>
+					{% for subscription in subscriptions_list %}
+					<option value="{{subscription.id}}">{{subscription.id}} - {{ subscription.member.name }}</option>
+					{% endfor %}
+			</select> </td>
+		</tr>
+	    <tr>
+			<td align="right">Auction No:</td>
+			<td><input type="text" name="month" value="{{auction_month}}" required></td>
+		</tr>
+		<tr>
+			<td colspan="2"><input type="submit" value="Submit"></td>
+		</tr>
+		</table>
+	</form>
+</center>
+{% endblock %}
