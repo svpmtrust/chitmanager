@@ -47,7 +47,11 @@
 	width: 12pt;
 	height: 12pt;
 }
-
-body {
-	border: 1px black solid;
+.label {
+	color: gray;
+	text-align: right;	
+}
+button, submit {
+	font-size: 12pt;
+	background-color: lightblue;
 }

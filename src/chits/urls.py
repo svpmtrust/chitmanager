@@ -15,6 +15,7 @@ urlpatterns = patterns('',
     url(r'^groups/delete$', chit_main_app.views.delete_group),
     url(r'^groups/members$', chit_main_app.views.group_members),
     url(r'^groups/auction$', chit_main_app.views.new_auction),
+    url(r'^groups/remove_subscription$', chit_main_app.views.remove_subscription),
     
     # Customer Operations
     url(r'^customers/new$', chit_main_app.views.new_customer),
@@ -26,4 +27,5 @@ urlpatterns = patterns('',
     url(r'^customers/subscription$', chit_main_app.views.subscriptionnew),
     url(r'^customers/record_payment$', chit_main_app.views.record_customer_payment),
     url(r'^customers/mobile_number$', chit_main_app.views.new_mobile_number),
+    url(r'^customers/group_activity$', chit_main_app.views.subscription_activity)
 )

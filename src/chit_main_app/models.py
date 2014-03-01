@@ -42,5 +42,3 @@ class JournalItem(models.Model):
     subscription = models.ForeignKey(Subscriptions)
     debit = models.IntegerField()
     credit = models.IntegerField()
-    #cutsomer = models.ForeignKey(Customer)
-    #group = models.ForeignKey(Group)

@@ -22,20 +22,30 @@ def homepage(request):
 
 @login_required
 def new_group(request):
-    context = RequestContext(request)
     if request.method == 'GET':
+        if 'id' in request.GET:
+            group_details = Group.objects.get(id=request.GET['id'])
+        else:
+            group_details = Group()
         template = loader.get_template('groups/new.html')
+        context = RequestContext(request, {
+                'group_details': group_details
+            })
         return HttpResponse(template.render(context))    
     elif request.method == 'POST':
-        group = Group()
+        if 'id' in request.POST:
+            group = Group.objects.get(id=request.POST['id'])
+        else:
+            group = Group()
         group.name = request.POST['groupname']
         group.amount = request.POST['amount']
         group.start_date = request.POST['startdate']
         group.total_months = request.POST['totalmonths']
         group.commision = request.POST['commission']
         group.save()
-        return HttpResponseRedirect("/groups/list")
-      
+
+        return HttpResponseRedirect("/groups/members?id="+str(group.id))
+
 @login_required
 def group_list(request):
     group_list = Group.objects.all()
@@ -49,6 +59,10 @@ def group_list(request):
     auction_count = Subscriptions.objects.all().values('group_id').annotate(Count('id'), Count('auction_amount'))
     for x in auction_count:
         auctions_left[x['group_id']] = x['id__count'] - x['auction_amount__count']
+        
+    for g in group_list:
+        if g.id not in auctions_left:
+            auctions_left[g.id] = g.total_months
     
     template = loader.get_template('groups/list.html')
     context = RequestContext(request, {
@@ -63,6 +77,8 @@ def group_members(request):
     try:
         member_list = Subscriptions.objects.filter(group_id=request.GET['id'])
         group_details = Group.objects.get(id=request.GET['id'])
+        months_done = sum(0 if m.auction_amount is None else 1 for m in member_list)
+        remaining_months = group_details.total_months - months_done
         due_amounts = {}
         dues = JournalItem.objects.filter(subscription__group_id=request.GET['id']).values('subscription_id').annotate(Sum('debit'),Sum('credit'))
         for x in dues:
@@ -71,8 +87,10 @@ def group_members(request):
         context = RequestContext(request, {
             'member_list': member_list,
             'group_details':group_details,
-            'due_amounts': due_amounts
-              })
+            'remaining_months': remaining_months,
+            'due_amounts': due_amounts,
+            'total_due_amount': sum(due_amounts.values())
+        })
         return HttpResponse(template.render(context))        
     except Subscriptions.DoesNotExist:
         return HttpResponse("No members exist in this group.")
@@ -254,7 +272,7 @@ def record_customer_payment(request):
     payments_for = {}
     for s in Subscriptions.objects.filter(member_id=request.POST['customer_id']):
         k = 'payment_for_'+str(s.id)
-        if k in request.POST:
+        if k in request.POST and request.POST[k]:
             payments_for[s.id] = int(request.POST[k])
     if sum(payments_for.values()) != payment_amount:
         return HttpResponse('Sum of amounts is not adding up')
@@ -285,3 +303,22 @@ def new_mobile_number(request):
     m.mobile_number = request.GET['new_number']
     m.save()
     return HttpResponseRedirect('/customers/list')
+
+def remove_subscription(request):
+    m = Subscriptions.objects.get(id=request.GET['id'])
+    if m:
+        m.delete()
+    else:
+        return HttpResponse('Invalid subscription')
+    return_to = request.GET.get('return_to','group')
+    if return_to == 'customer':
+        return HttpResponseRedirect('/customers/grouplist?id=%s' % m.member_id)
+    else:
+        return HttpResponseRedirect('/groups/members?id=%s' % m.group_id)
+
+def subscription_activity(request):
+    j = JournalItem.objects.filter(subscription_id=request.GET['subscription_id']).order_by('txn__entry_date')
+    s = Subscriptions.objects.get(id=request.GET['subscription_id'])
+    c = RequestContext(request, {'journal': j, 'subscription': s})
+    template = loader.get_template('customers/subscription_activity.html')
+    return HttpResponse(template.render(c))

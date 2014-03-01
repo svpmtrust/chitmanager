@@ -8,26 +8,28 @@
 {% if group_list %} 
  <table border="1" cellspacing=0 cellpadding=5 bordercolor=lightgray>
 	<tr>
+		<th>&nbsp;</th>
 		<th>Name</th>
 		<th>Amount</th>
+		<th>Commission</th>
 		<th>Start Date</th>
-		<th>Total Months</th>
-		<th>Remaining Months</th>
-		<th>Total Due</th>
-		<th>Action</th>
+		<th>Months</th>
+		<th>Amount Due</th>
+		<th>&nbsp;</th>
 	</tr>
 	{% for group in group_list %}
 	<tr>
+		<td>
+		  <a href="/groups/delete?id={{group.id}}" onclick="return confirm('Are you Sure?')">
+		    <img src='/static/remove.png' class='action_icon'/>
+		  </a></td>
 		<td><a href='/groups/members?id={{group.id}}'>{{ group.name }}</a></td>
-		<td>{{ group.amount }}</td>
+		<td align="right">{{ group.amount }}</td>
+		<td align="center">{{ group.commision }}%</td>
 		<td>{{ group.start_date }}</td>
-		<td align="center">{{ group.total_months }}</td>
-		<!-- 
-		<td>{{ group.remaining_months }}</td>
-		<td>{{ group.total_due}}</td> -->
-		<td>{{auctions_left|get_item:group.id}}</td>
-		<td>{{due_amounts|get_item:group.id}}</td>
-		<td align="center"><a href="/groups/delete?id={{group.id}}" onclick="return confirm('Are you Sure?')">Delete</a></td>
+		<td align="center">{{ group.total_months }} ({{auctions_left|get_item:group.id}} left)</td>
+		<td align="right">{{due_amounts|get_item:group.id}}</td>
+		<td align="center"><a href='/groups/new?id={{group.id}}'>Edit</a></td>
 	</tr>
 	{% endfor %}
 </table>
