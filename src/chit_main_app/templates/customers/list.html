@@ -1,32 +1,42 @@
 {% extends "site_layout.html" %}
+{% load myfilter %}
 {% block title %}Customer List{% endblock %}
 {% block page_heading %}Customer List{% endblock %}
 
 {% block content %}
-<button onclick="window.location='/customers/new'">Add Customer</button>
+<script>
+function change_mobile(id) {
+	new_mobile = prompt('Enter new mobile number: ')
+	if (new_mobile) {
+		window.location = '/customers/mobile_number?id='+id+'&new_number='+new_mobile
+	}
+	return false
+}
 
+</script>
+<button onclick="window.location='/customers/new'">Add Customer</button>
 {% if customer_list %} 
 	<table border="1" cellspacing=0 cellpadding=5>
 		<tr>
+			<th>&nbsp</th>
 			<th>Name</th>
 			<th>Mobile_number</th>
-			<th>Actions</th>
+			<th>Due</th>
 		</tr>
 		{% for customer in customer_list %}
 		<tr>
-			<td><a href="/customers/grouplist?id={{customer.id}}">{{ customer.name }}</a></td>
-			<td>{{ customer.mobile_number }}</td>
 			<td align="center">
 				<a href="/customers/delete?id={{customer.id}}" onclick="return confirm('Are you sure?')">
 				    <img src='/static/remove.png' class='action_icon'/>
 				</a>
-				<a href='#'><img src='/static/edit.png' class='action_icon'/></a>
-				<a href='#'><img src='/static/write.png' class='action_icon'/></a>
 			</td>
+			<td><a href="/customers/grouplist?id={{customer.id}}">{{ customer.name }}</a></td>
+			<td>{{ customer.mobile_number }} <a href='#' onclick="return change_mobile({{ customer.id }})"><img src='/static/edit.png' class='action_icon'/></a></td>
+			<td><a href="/customers/grouplist?id={{customer.id}}">{{ due_amounts|get_item:customer.id }}</a></td>
 		</tr>
 		{% endfor %}
 	</table>
 {% else %}
 	<p>No Customers are available.</p>
-{% endif %}		
+{% endif %}	
 {% endblock %}

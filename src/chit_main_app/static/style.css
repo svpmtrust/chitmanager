@@ -3,20 +3,24 @@
    top: 1pt;
    left: 5pt;
    right: 5pt;
-   height: 40pt;
+   height: 45pt;
    border-bottom: black solid thin;
    background-color: white;
+   font-size: 16pt;
 }
 .content {
-   top: 50pt;
-   bottom: 10pt;
+   top: 46pt;
+   bottom: 12pt;
    left: 5pt;
    right: 5pt;
-position: absolute;
-overflow-y: auto;
+   position: absolute;
+   overflow-y: auto;
+   font-size: 14pt;
+   border: lightblue solid medium;
+   padding: 5pt;
 }
 .footer {
-   font-size: 9pt;
+   font-size: 10pt;
    position: absolute;
    bottom: 0pt;
    left: 5pt;
@@ -40,6 +44,10 @@ overflow-y: auto;
     text-decoration: none; 
 }
 .action_icon {
-	width: 16pt;
-	height: 16pt;
+	width: 12pt;
+	height: 12pt;
+}
+
+body {
+	border: 1px black solid;
 }

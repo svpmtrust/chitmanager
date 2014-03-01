@@ -24,4 +24,6 @@ urlpatterns = patterns('',
     url(r'^customers/history$', chit_main_app.views.customershistory),
     url(r'^customers/transactions$', chit_main_app.views.customerstransactions),    
     url(r'^customers/subscription$', chit_main_app.views.subscriptionnew),
+    url(r'^customers/record_payment$', chit_main_app.views.record_customer_payment),
+    url(r'^customers/mobile_number$', chit_main_app.views.new_mobile_number),
 )

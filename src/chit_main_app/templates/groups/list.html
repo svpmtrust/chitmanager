@@ -1,4 +1,5 @@
 {% extends "site_layout.html" %}
+{% load myfilter %}
 {% block title %}Group List{% endblock %}
 {% block page_heading %}Group List{% endblock %}
 {% block content %}
@@ -24,8 +25,8 @@
 		<!-- 
 		<td>{{ group.remaining_months }}</td>
 		<td>{{ group.total_due}}</td> -->
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
+		<td>{{auctions_left|get_item:group.id}}</td>
+		<td>{{due_amounts|get_item:group.id}}</td>
 		<td align="center"><a href="/groups/delete?id={{group.id}}" onclick="return confirm('Are you Sure?')">Delete</a></td>
 	</tr>
 	{% endfor %}

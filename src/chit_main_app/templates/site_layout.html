@@ -11,7 +11,7 @@
     	<tr>
     		<td nowrap="nowrap">&nbsp;<a href='/groups/list' class=menu>Groups</a></td>
     		<td><a href='/customers/list' class=menu>Customers</a>&nbsp;</td>
-    		<td width=100%>&nbsp;</td>
+    		<td width=100% align="right">Hello, {{ request.user.name }}</td>
     		<td>&nbsp;<a href='/logout' class=menu>Logout</a>&nbsp;</td>
     	</tr>
     </table>

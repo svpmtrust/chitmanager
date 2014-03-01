@@ -1,4 +1,5 @@
 {% extends "site_layout.html" %}
+{% load myfilter %}
 {% block title %}Group: {{group_details.name}} {% endblock%}
 {% block page_heading %}Group Details for {{group_details.name}}{% endblock%}
 {% block content %}
@@ -31,14 +32,14 @@
 		<th>Amount Due</th>
 		<th>Actions</th>
 	</tr>
-	{% for member in member_list %}
+	{% for subscription in member_list %}
 	<tr>
-		<td><a href='/customers/history'>{{ member.member.name }}</td>
-		<td>{{member.id}}</td>
-		<td>{{member.auction_date|default_if_none:"-"}}</td>
-		<td>{{member.auction_amount|default_if_none:"-"}}</td>
-		<td>{{member.auction_number|default:"-"}}</td>
-		<td>&nbsp;</td>
+		<td><a href='/customers/history'>{{ subscription.member.name }}</td>
+		<td>{{subscription.id}}</td>
+		<td>{{subscription.auction_date|default_if_none:"-"}}</td>
+		<td>{{subscription.auction_amount|default_if_none:"-"}}</td>
+		<td>{{subscription.auction_number|default:"-"}}</td>
+		<td>{{due_amounts|get_item:subscription.id}}</td>
 		<td>
 			<a href='#'>Remove</a> |
 			<a href='#'>Edit Auction</a>

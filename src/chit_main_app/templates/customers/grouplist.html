@@ -1,26 +1,35 @@
 {% extends "site_layout.html" %}
+{% load myfilter %}
 {% block title %}{{customer_details.name}} details{% endblock %} 
 {% block page_heading %} Details of {{customer_details.name}} {% endblock %}
 {% block content %}
+
 <button onclick="window.location='/customers/subscription?cid={{customer_details.id}}'">Add To Group</button>
 <p/>
 {% if group_list %} 
+<form action='/customers/record_payment' method="post">
+{% csrf_token %}
+<input type='hidden' name='customer_id' value='{{ customer_details.id }}'/>
+Payment (Due:{{total_due}}): <input name='payment_amount'/> <button onclick="window.location='#">Record Payment</button>
 <table border="1" bordercolor=lightgray cellspacing=0 cellpadding=5>
 	<tr>
 		<th>Group Names</th>
 		<th>ID</th>
 		<th>Auction Amount</th>
 		<th>Due</th>
+		<th>Payment</th>
 	</tr>
   {% for group in group_list %}
    <tr>
 		<td><a href="/customer/group_activity?group_id={{ group.group_id }}&cust_id={{ customer_details.id }}">{{group.group.name}}</td>
 		<td>{{group.id}}</td>
 		<td>{{group.auction_amount|default:"-"}}</td>
-		<td>&nbsp;</td>
+		<td>{{due_amounts|get_item:group.id}}</td>
+		<td><input name="payment_for_{{ group.id }}"/></td>
    </tr>
 	{% endfor %}
 </table>
+</form>
 {% else %}
 Not in any groups yet
 {% endif %}
