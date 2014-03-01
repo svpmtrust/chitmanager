@@ -146,29 +146,6 @@ def subscriptionnew(request):
         subscription.comments = request.POST['comments']
         subscription.save()
         return HttpResponseRedirect('/subscriptions/list.html')
-#         return HttpResponseRedirect('/groups/members.html?id=' + request.POST['group_id'])
-      
-# def subscriptionnewgroup(request):
-#     if request.method == 'GET':
-#         customer_list = Customer.objects.all()
-#         group_list = Group.objects.all()
-#         customer = Customer.objects.filter(id=request.GET['id'])
-#         template = loader.get_template('subscriptions/new.html')
-#         context = RequestContext(request, {
-#             'customer_list': customer_list,
-#             'group_list':group_list,
-#             'customer':customer
-#         })
-#         return HttpResponse(template.render(context)) 
-#     elif request.method == 'POST':
-#         group = Group.objects.get(id=request.POST['to_group_list'])
-#         customer = Customer.objects.get(id=request.POST['to_customer_list'])
-#         subscription = Subscriptions()
-#         subscription.group = group
-#         subscription.member = customer
-#         subscription.comments = request.POST['comments']
-#         subscription.save()
-#         return HttpResponseRedirect('/groups/members.html?id='+ request.POST['group_id'])
      
 def subscriptionslist(request):
     subscription_list = Subscriptions.objects.all()

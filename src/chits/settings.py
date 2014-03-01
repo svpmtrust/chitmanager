@@ -62,9 +62,9 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME':'chitmanager',
-        'USER': 'chitmgr',
-        'PASSWORD': 'chitmgr',
-        'HOST': '',
+         'USER': 'root',
+         'PASSWORD':"karthik",
+         'HOST': '',
         'PORT': '',
     }
     }
