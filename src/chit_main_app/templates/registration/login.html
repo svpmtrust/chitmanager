@@ -3,9 +3,15 @@
 	Login</h2>
 
 <center>
-	{% if error %}
-	    <font color="red">{{ error }}</font>
-	{% endif %}
+{% if form.non_field_errors or form.this_is_the_login_form.errors %}
+{% for error in form.non_field_errors|add:form.this_is_the_login_form.errors %}
+<p class="errornote">
+    {{ error }}
+</p>
+{% endfor %}
+{% endif %}
+
+
 	<div style="background: lightgray; width: 400">
 		<form action="/login/" method="post">
 			{% csrf_token %}
@@ -17,7 +23,7 @@
 				</tr>
 				<tr>
 					<td style="padding-top: 20">Password:</td>
-					<td style="padding-top: 20"><input type="text" name="password" required></td>
+					<td style="padding-top: 20"><input type="password" name="password" required></td>
 				</tr>
 				<tr>
 					<td style="padding-top: 20; padding-left: 130;" colspan="2"><input
