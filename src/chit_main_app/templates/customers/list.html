@@ -5,6 +5,16 @@
 
 {% block content %}
 <script>
+<script type="text/javascript" src="http://code.jquery.com/jquery-1.4.2.min.js"></script>
+<link rel="stylesheet" href="http://code.jquery.com/ui/1.10.4/themes/smoothness/jquery-ui.css">
+<script src="http://code.jquery.com/jquery-1.9.1.js"></script>
+<script src="http://code.jquery.com/ui/1.10.4/jquery-ui.js"></script>
+<script>
+
+$(function() {
+    $( "#datepicker" ).datepicker({ dateFormat: 'yy-mm-dd' });
+});
+
 function change_mobile(id) {
 	new_mobile = prompt('Enter new mobile number: ')
 	if (new_mobile) {
@@ -14,14 +24,21 @@ function change_mobile(id) {
 }
 
 </script>
-<button onclick="window.location='/customers/new'">Add Customer</button>
+<button onclick="window.location='/customers/new'">Add Customer</button> <P/>
 {% if customer_list %} 
+<form method="post" action="/customers/daily_collection">
+{% csrf_token %}
+<table>
+	<tr>
+		<td align='right'> Date: <input type='text' id='datepicker' name='collection_date'/> </td>
+	</tr>
+	<tr> <td>
 	<table border="1" cellspacing=0 cellpadding=5>
 		<tr>
 			<th>&nbsp</th>
 			<th>Name</th>
 			<th>&nbsp;</th>
-			<th>Mobile_number</th>
+			<th>Mobile Number</th>
 			<th>Due</th>
 			<th>Payment</th>
 		</tr>
@@ -30,20 +47,31 @@ function change_mobile(id) {
 			{% if customer.id > 0 %}
 			<td align="center">
 				<a href="/customers/delete?id={{customer.id}}" onclick="return confirm('Are you sure?')">
-				    <img src='/static/remove.png' class='action_icon'/>
+				    <img src='/static/remove.png' class='action_icon' title='Delete Customer'/>
 				</a>
 			</td>
 			{% else %}
 			<td> &nbsp; </td>
 			{% endif %}
 			<td><a href="/customers/grouplist?id={{customer.id}}">{{ customer.name }}</a></td>
-			<td><a href='/customers/history?id={{customer.id}}'><img src="/static/list.png" class='action_icon'/></a></td>
-			<td>{{ customer.mobile_number }} <a href='#' onclick="return change_mobile({{ customer.id }})"><img src='/static/edit.png' class='action_icon'/></a></td>
+			<td><a href='/customers/history?id={{customer.id}}'>
+				<img src="/static/list.png" class='action_icon' title='Customer Transaction History'/></a></td>
+			<td>{{ customer.mobile_number }} <a href='#' onclick="return change_mobile({{ customer.id }})">
+				<img src='/static/edit.png' class='action_icon' title='Change mobile number'/></a></td>
 			<td><a href="/customers/grouplist?id={{customer.id}}">{{ due_amounts|get_item:customer.id }}</a></td>
-			<td><input type="text"></td>
+			<td><input type="text" name='customer_collection_{{customer.id}}'></td>
 		</tr>
 		{% endfor %}
 	</table>
+	</td></tr>
+	<tr><td align="right">
+		Total Collection: <input type="text" disabled="disabled" id='total_collection'/>
+	</td></tr>
+	<tr><td align="right">
+		<button type='submit'>Record Daily Collection</button>
+	</td></tr>
+	</table>
+</form>
 {% else %}
 	<p>No Customers are available.</p>
 {% endif %}	

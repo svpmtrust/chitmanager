@@ -116,6 +116,13 @@ def new_customer(request):
         member = Customer(name=member_name, mobile_number=request.POST['mobile'])
         member.user = user
         member.save()
+        
+        s = Subscriptions()
+        s.member_id = member.id
+        s.group_id = 0
+        s.comment = 'Auto added to personal credits group'
+        s.save()
+        
         return HttpResponseRedirect("/customers/list")
 
 @login_required
@@ -302,7 +309,7 @@ def record_customer_payment(request):
         return HttpResponse('Sum of amounts is not adding up')
     
     j = Journal()
-    j.entry_date = datetime.now()
+    j.entry_date = request.POST['payment_date']
     j.comments = 'No Comments'
     j.entry_type = j.PAYMENT
     j.save()
@@ -365,3 +372,74 @@ def change_subscription(request):
         s_details.member_id = c_id
         s_details.save()
         return HttpResponseRedirect('/groups/members?id=%s' % s_details.group_id)
+
+@login_required
+def daily_collection(request):
+    c_list = Customer.objects.all().order_by('name')
+    for c in c_list:
+        cust_payment = request.POST.get('customer_collection_%s' % c.id)
+        cust_payment = int(cust_payment) if cust_payment else 0
+        if cust_payment:
+            print "Payment for ", c.name, " is ", cust_payment
+            print "Finding subscriptions with due amounts"
+            dues = (JournalItem.objects
+                               .filter(subscription__member_id=c.id)
+                               .values('subscription_id')
+                               .annotate(Sum('debit'),Sum('credit'))
+                               .order_by('subscription__id'))
+            
+            # Get any previous credits
+            pc_id = Subscriptions.objects.get(member_id=c.id, group_id=0).id
+            a = JournalItem.objects.filter(subscription_id=pc_id).aggregate(Sum('debit'),Sum('credit'))
+            credit_amount = int(a['credit__sum'] if a['credit__sum'] else 0)
+            debit_amount = int(a['debit__sum'] if a['debit__sum'] else 0)
+            old_credit = credit_amount - debit_amount
+
+            # Create journal entry
+            j = Journal()
+            j.entry_date = request.POST['collection_date']
+            j.amount = cust_payment
+            j.entry_type = j.PAYMENT
+            j.save()
+            
+            # If there any old credit, add it to the current amount
+            if old_credit != 0:
+                j1 = JournalItem()
+                j1.txn = j
+                j1.subscription_id = pc_id
+                cust_payment += old_credit
+
+                if(old_credit>0):
+                    j1.debit, j1.credit = old_credit, 0
+                    j1.credit = 0
+                else:
+                    # We don't expect this case.  But if the customer
+                    # Owe us something for what ever reason, we reduce it
+                    # from the amount
+                    j1.debit, j1.credit = 0, -old_credit
+                j1.save()
+            
+            for s in dues:
+                s_id = s['subscription_id']
+                due = s['debit__sum'] - s['credit__sum']
+                if due == 0:
+                    continue
+                
+                j1 = JournalItem()
+                j1.subscription_id = s_id
+                j1.txn = j
+                j1.debit = 0
+                j1.credit = min(due, cust_payment)
+                j1.save()
+                cust_payment -= j1.credit
+                if cust_payment == 0:
+                    break
+            else:
+                j1 = JournalItem()
+                j1.txn = j
+                j1.credit = cust_payment
+                j1.subscription_id = pc_id
+                j1.debit = 0
+                j1.save()
+
+    return HttpResponseRedirect('/customers/list')

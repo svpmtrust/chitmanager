@@ -24,9 +24,11 @@
 		<td class=label>Due Amount</td>
 		<td>{{total_due_amount}}</td>
 	</tr>
+	{% if not group_details.total_months == 0 %}
 	<tr>
 		<td align='right' colspan=2><a href="/groups/new?id={{group_details.id}}">Edit</a></td>
 	</tr>
+	{% endif %}
 </table>
 
 <script>
@@ -42,31 +44,38 @@ function remove_subscription(id) {
 </script>
 
 <h3>Group Members</h3>
+{% if not group_details.total_months == 0 %}
 <button onclick="window.location='/customers/subscription?gid={{group_details.id}}'">Add Member</button>
+{% endif %}
 {% if member_list %}
+{% if not group_details.total_months == 0 %}
 <button onclick="window.location='/groups/auction?id={{group_details.id}}'">Enter Auction</button>
+{% endif %}
 <table border="1" cellpadding=5 cellspacing=0>
 	<tr>
 		<th>&nbsp;</th>
 		<th>Member Name</th>
-		<th>ID</th>
+		<th>Subscription</th>
 		<th>Auction Date</th>
 		<th>Auction Amount</th>
 		<th>Auction Month</th>
 		<th>Amount Due</th>
-		<th>Actions</th>
 	</tr>
 	{% for subscription in member_list %}
 	<tr>
 	    <td>
+	    {% if group_details.total_months == 0 %} 
+	    &nbsp;
+	    {% else %}
 		{% if remaining_months == group_details.total_months %}
 		  <a href='#' onclick="remove_subscription({{subscription.id}})">
-		    <img src='/static/remove.png' class='action_icon'/>
+		    <img src='/static/remove.png' class='action_icon' title='Remove Subscription'/>
 		  </a>
 		{% else %}
 			<a href="/groups/change_subscription?id={{ subscription.id }}">
-			   <img src='/static/edit.png' class='action_icon'/>
+			   <img src='/static/edit.png' class='action_icon' title='Select a different user for this subscription'/>
 			</a>
+		{% endif %}
 		{% endif %}
 		</td>
 		<td>{{ subscription.member.name }}</td>
@@ -75,9 +84,6 @@ function remove_subscription(id) {
 		<td>{{subscription.auction_amount|default_if_none:"-"}}</td>
 		<td>{{subscription.auction_number|default:"-"}}</td>
 		<td>{{due_amounts|get_item:subscription.id}}</td>
-		<td>
-			<a href='#'>Edit Auction</a>
-		</td>
 	</tr>
 	{% endfor %}
 </table>

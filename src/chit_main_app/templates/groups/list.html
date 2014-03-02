@@ -15,21 +15,28 @@
 		<th>Start Date</th>
 		<th>Months</th>
 		<th>Amount Due</th>
-		<th>&nbsp;</th>
 	</tr>
 	{% for group in group_list %}
 	<tr>
 		<td>
+		{% if group.id == 0 %}
+		&nbsp;
+		{% else %}
 		  <a href="/groups/delete?id={{group.id}}" onclick="return confirm('Are you Sure?')">
-		    <img src='/static/remove.png' class='action_icon'/>
-		  </a></td>
-		<td><a href='/groups/members?id={{group.id}}'>{{ group.name }}</a></td>
+		    <img src='/static/remove.png' class='action_icon' title='Remove Group'/>
+		  </a>
+		{% endif %}
+		</td>
+		<td><a href='/groups/members?id={{group.id}}'>{{ group.name }}</a>
+		{% if not group.id == 0 %}
+		<a href='/groups/new?id={{group.id}}'><img src='/static/edit.png' class='action_icon'/></a>
+		{% endif %}
+		</td>
 		<td align="right">{{ group.amount }}</td>
 		<td align="center">{{ group.commision }}%</td>
 		<td>{{ group.start_date }}</td>
 		<td align="center">{{ group.total_months }} ({{auctions_left|get_item:group.id}} left)</td>
 		<td align="right">{{due_amounts|get_item:group.id}}</td>
-		<td align="center"><a href='/groups/new?id={{group.id}}'>Edit</a></td>
 	</tr>
 	{% endfor %}
 </table>

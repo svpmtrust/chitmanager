@@ -7,7 +7,15 @@
 <button onclick="window.location='/customers/subscription?cid={{customer_details.id}}'">Add To Group</button>
 <button onclick="window.location='/customers/history?id={{customer_details.id}}'">Transaction History</button>
 <p/>
-<script>
+<script type="text/javascript" src="http://code.jquery.com/jquery-1.4.2.min.js"></script>
+<link rel="stylesheet" href="http://code.jquery.com/ui/1.10.4/themes/smoothness/jquery-ui.css">
+<script src="http://code.jquery.com/jquery-1.9.1.js"></script>
+<script src="http://code.jquery.com/ui/1.10.4/jquery-ui.js"></script>
+ <script>
+$(function() {
+$( "#datepicker" ).datepicker({ dateFormat: 'yy-mm-dd' });
+});
+
 function remove_subscription(id) {
 	x = confirm('Are you sure you want to remove the subscription?')
 	if (x) {
@@ -22,12 +30,16 @@ function remove_subscription(id) {
 <form action='/customers/record_payment' method="post">
 {% csrf_token %}
 <input type='hidden' name='customer_id' value='{{ customer_details.id }}'/>
-Payment (Due:{{total_due}}): <input name='payment_amount'/> <button onclick="window.location='#">Record Payment</button>
+<table border="0">
+<tr align='right'>
+		<td> Payment Date: <input id='datepicker' name='payment_date' type='text'/>
+	</tr>
+<tr><td>
 <table border="1" bordercolor=lightgray cellspacing=0 cellpadding=5>
 	<tr>
 		<th>&nbsp;</th>
 		<th>Group Names</th>
-		<th>ID</th>
+		<th>Subscription</th>
 		<th>Auction Amount</th>
 		<th>Due</th>
 		<th>Payment</th>
@@ -39,7 +51,7 @@ Payment (Due:{{total_due}}): <input name='payment_amount'/> <button onclick="win
    		  &nbsp;
    		  {% else %}
 		  <a href='#' onclick="remove_subscription({{subscription.id}})">
-		    <img src='/static/remove.png' class='action_icon'/>
+		    <img src='/static/remove.png' class='action_icon' tooltip='Delete Subscription'/>
 		  </a>
 		  {% endif %}
 		</td>
@@ -50,6 +62,16 @@ Payment (Due:{{total_due}}): <input name='payment_amount'/> <button onclick="win
 		<td><input name="payment_for_{{ subscription.id }}"/></td>
    </tr>
 	{% endfor %}
+	<tr>
+		<td align='right' colspan='4'> <b>Total:</b> </td>
+		<td> <b>{{total_due}}</b> </td>
+		<td align='right' colspan='4'> <input name='payment_amount'/> </td>
+	<tr>
+</table>
+	<tr align='right'>
+		<td><button onclick="window.location='#">Record Payment</button> </td>
+	<tr>
+	
 </table>
 </form>
 {% else %}
