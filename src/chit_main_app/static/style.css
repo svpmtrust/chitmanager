@@ -59,3 +59,19 @@ button, submit {
 span.warning {
 	background-color: #ffcccc;
 }
+
+.payment-amount {
+   font-size: 12pt;	
+}
+
+.total-amount {
+   font-size: 12pt;
+}
+
+tr:nth-child(even) {
+	background-color: #f0f0ff;
+}
+
+tr:nth-child(odd) {
+	background-color: #ffffff;
+}

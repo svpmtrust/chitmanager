@@ -5,12 +5,6 @@
 
 {% block content %}
 <script>
-<script type="text/javascript" src="http://code.jquery.com/jquery-1.4.2.min.js"></script>
-<link rel="stylesheet" href="http://code.jquery.com/ui/1.10.4/themes/smoothness/jquery-ui.css">
-<script src="http://code.jquery.com/jquery-1.9.1.js"></script>
-<script src="http://code.jquery.com/ui/1.10.4/jquery-ui.js"></script>
-<script>
-
 $(function() {
     $( "#datepicker" ).datepicker({ dateFormat: 'yy-mm-dd' });
 });
@@ -23,6 +17,20 @@ function change_mobile(id) {
 	return false
 }
 
+$(function() {
+	$('.payment-amount').change(function() {
+		var total = 0
+		$('.payment-amount').each(function() {
+			var val1 = $(this).val()
+			if (val1) {
+			    total = total + parseInt(val1)
+			}
+		})
+		$('#total_collection').val(total)
+	
+	})
+});
+
 </script>
 <button onclick="window.location='/customers/new'">Add Customer</button> <P/>
 {% if customer_list %} 
@@ -30,7 +38,7 @@ function change_mobile(id) {
 {% csrf_token %}
 <table>
 	<tr>
-		<td align='right'> Date: <input type='text' id='datepicker' name='collection_date'/> </td>
+		<td align='right'> Date: <input type='text' id='datepicker' name='collection_date' required="required"/> </td>
 	</tr>
 	<tr> <td>
 	<table border="1" cellspacing=0 cellpadding=5>
@@ -59,13 +67,14 @@ function change_mobile(id) {
 			<td>{{ customer.mobile_number }} <a href='#' onclick="return change_mobile({{ customer.id }})">
 				<img src='/static/edit.png' class='action_icon' title='Change mobile number'/></a></td>
 			<td><a href="/customers/grouplist?id={{customer.id}}">{{ due_amounts|get_item:customer.id }}</a></td>
-			<td><input type="text" name='customer_collection_{{customer.id}}'></td>
+			<td><input type="text" class='payment-amount' dir="rtl" name='customer_collection_{{customer.id}}' size="10"></td>
 		</tr>
 		{% endfor %}
 	</table>
 	</td></tr>
 	<tr><td align="right">
-		Total Collection: <input type="text" disabled="disabled" id='total_collection'/>
+		Total Collection: <input type="text" class='total-amount'
+					disabled="disabled" id='total_collection' size="10" dir="rtl"/> &nbsp;
 	</td></tr>
 	<tr><td align="right">
 		<button type='submit'>Record Daily Collection</button>

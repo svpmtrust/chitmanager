@@ -7,14 +7,50 @@
 <button onclick="window.location='/customers/subscription?cid={{customer_details.id}}'">Add To Group</button>
 <button onclick="window.location='/customers/history?id={{customer_details.id}}'">Transaction History</button>
 <p/>
-<script type="text/javascript" src="http://code.jquery.com/jquery-1.4.2.min.js"></script>
-<link rel="stylesheet" href="http://code.jquery.com/ui/1.10.4/themes/smoothness/jquery-ui.css">
-<script src="http://code.jquery.com/jquery-1.9.1.js"></script>
-<script src="http://code.jquery.com/ui/1.10.4/jquery-ui.js"></script>
  <script>
 $(function() {
 $( "#datepicker" ).datepicker({ dateFormat: 'yy-mm-dd' });
 });
+
+
+$(document).ready(function(){
+  var arr = $(".dueAmount");
+  var txtDueAmounts = $('.payment-amount');
+  var sum = 0;
+  $.each(arr,function(){sum+= parseFloat($(this).text()) || 0;});
+
+  function line_item_change(){
+	    var sumOfTxtDueAmounts = 0;
+	    $.each(txtDueAmounts ,function(){sumOfTxtDueAmounts+= parseFloat($(this).val()) || 0;});
+	    $("#total_payment").val(sumOfTxtDueAmounts);
+	  }
+  
+  $(".payment-amount").change(line_item_change);
+  $(".payment-amount").keyup(line_item_change);
+
+  $("#total_payment").keyup(function() {
+      var remaing_amount = parseInt($("#total_payment").val());
+      
+      console.log(typeof(txtDueAmounts));
+      console.log(txtDueAmounts);
+      
+      for(var i=0; i<arr.length; i++) {
+    	  var this_due = parseInt($(arr[i]).text())
+    	  if (remaing_amount > 0) {
+    		var amount_for_this = remaing_amount > this_due?this_due:remaing_amount;
+    		$(txtDueAmounts[i]).val(amount_for_this);
+    	  	remaing_amount -= amount_for_this
+    	  } else {
+    		  $(txtDueAmounts[i]).val('')
+    	  }
+       
+      }
+      if(remaing_amount > 0) {
+          $(".extraCredits").val(total);
+      }
+  });
+});
+
 
 function remove_subscription(id) {
 	x = confirm('Are you sure you want to remove the subscription?')
@@ -58,14 +94,21 @@ function remove_subscription(id) {
 		<td>{{subscription.group.name}}</td>
 		<td><a href="/customers/group_activity?subscription_id={{ subscription.id }}&return_to=customer">{{subscription.id}}</a></td>
 		<td>{{subscription.auction_amount|default:"-"}}</td>
-		<td>{{due_amounts|get_item:subscription.id}}</td>
-		<td><input name="payment_for_{{ subscription.id }}"/></td>
+		<td><span class='dueAmount'>{{due_amounts|get_item:subscription.id}}</span></td>
+		<td><input dir="rtl" size=10 pattern="\d*"
+			{% if subscription.group_id == 0 %}
+			class='payment-amount extraCredits'
+			{% else %}
+			class='payment-amount'
+			{% endif %}
+		 	name="payment_for_{{ subscription.id }}"/>
+		</td>
    </tr>
 	{% endfor %}
 	<tr>
 		<td align='right' colspan='4'> <b>Total:</b> </td>
 		<td> <b>{{total_due}}</b> </td>
-		<td align='right' colspan='4'> <input name='payment_amount'/> </td>
+		<td align='right' colspan='4'> <input id='total_payment' class='total-amount' autocomplete="off"  name='payment_amount' size=10 dir="rtl"/> </td>
 	<tr>
 </table>
 	<tr align='right'>
