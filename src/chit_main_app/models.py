@@ -8,6 +8,7 @@ class Group(models.Model):
     start_date = models.DateField()
     total_months = models.IntegerField()
     commision = models.FloatField()
+    started = models.NullBooleanField(null=True)
 
 class Customer(models.Model):
     name = models.CharField(max_length=100)

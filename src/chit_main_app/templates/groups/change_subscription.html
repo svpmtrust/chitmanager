@@ -1,0 +1,40 @@
+{% extends "site_layout.html" %}
+{% load myfilter %}
+{% block title %}Activity for subscription {{subscription.id}}{% endblock %} 
+{% block page_heading %}
+  Chaging the subscription (#{{subscription.id}}) from user <b>{{subscription.member.name}}</b> in group <b>{{subscription.group.name}}</b> 
+{% endblock %} 
+{% block content %}
+
+Click on the customer below to select. (TIP: Use CTRL+F to search for a customer)
+
+<script>
+function select_user(event, userid) {
+	console.log(event)
+	console.log(userid)
+	event.target.form.new_subscriber.value = userid
+	event.target.form.submit()
+}
+</script>
+
+<form action="/groups/change_subscription" method="post">
+<input type='hidden' name='subscription_id' value='{{subscription.id}}'>
+<input type='hidden' name='new_subscriber' value=''/>
+{% csrf_token %}
+<table border=1 cellspacing=0 cellpadding=10>
+<tr>
+  <th> Customer </th>
+  <th> Mobile </th>
+  <th> Select </th>
+</tr>
+{% for c in c_list %}
+<tr>
+   <td> {{ c.name }} </td>
+   <td> {{ c.mobile_number }} </td>
+   <td> <input type='button' value='select' onclick='select_user(event, {{c.id}})'/> </td>
+</tr>
+{% endfor %}
+</table>
+</form>
+
+{% endblock %}

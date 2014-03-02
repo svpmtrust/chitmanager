@@ -58,13 +58,19 @@ function remove_subscription(id) {
 	</tr>
 	{% for subscription in member_list %}
 	<tr>
-		<td>
+	    <td>
+		{% if remaining_months == group_details.total_months %}
 		  <a href='#' onclick="remove_subscription({{subscription.id}})">
 		    <img src='/static/remove.png' class='action_icon'/>
 		  </a>
+		{% else %}
+			<a href="/groups/change_subscription?id={{ subscription.id }}">
+			   <img src='/static/edit.png' class='action_icon'/>
+			</a>
+		{% endif %}
 		</td>
-		<td><a href='/customers/group_activity?subscription_id={{subscription.id}}&return_to=group'>{{ subscription.member.name }}</td>
-		<td>{{subscription.id}}</td>
+		<td>{{ subscription.member.name }}</td>
+		<td><a href='/customers/group_activity?subscription_id={{subscription.id}}&return_to=group'>{{subscription.id}}</a></td>
 		<td>{{subscription.auction_date|default_if_none:"-"}}</td>
 		<td>{{subscription.auction_amount|default_if_none:"-"}}</td>
 		<td>{{subscription.auction_number|default:"-"}}</td>
@@ -79,4 +85,5 @@ function remove_subscription(id) {
 <br />
 No members enrolled in this group yet.
 {% endif %}
+<p/>&nbsp;<p/>
 {% endblock %}

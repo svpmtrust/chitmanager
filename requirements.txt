@@ -1,2 +1,4 @@
 django
 mysql-python
+gunicorn
+dj_static

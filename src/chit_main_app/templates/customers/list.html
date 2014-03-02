@@ -20,19 +20,27 @@ function change_mobile(id) {
 		<tr>
 			<th>&nbsp</th>
 			<th>Name</th>
+			<th>&nbsp;</th>
 			<th>Mobile_number</th>
 			<th>Due</th>
+			<th>Payment</th>
 		</tr>
 		{% for customer in customer_list %}
 		<tr>
+			{% if customer.id > 0 %}
 			<td align="center">
 				<a href="/customers/delete?id={{customer.id}}" onclick="return confirm('Are you sure?')">
 				    <img src='/static/remove.png' class='action_icon'/>
 				</a>
 			</td>
+			{% else %}
+			<td> &nbsp; </td>
+			{% endif %}
 			<td><a href="/customers/grouplist?id={{customer.id}}">{{ customer.name }}</a></td>
+			<td><a href='/customers/history?id={{customer.id}}'><img src="/static/list.png" class='action_icon'/></a></td>
 			<td>{{ customer.mobile_number }} <a href='#' onclick="return change_mobile({{ customer.id }})"><img src='/static/edit.png' class='action_icon'/></a></td>
 			<td><a href="/customers/grouplist?id={{customer.id}}">{{ due_amounts|get_item:customer.id }}</a></td>
+			<td><input type="text"></td>
 		</tr>
 		{% endfor %}
 	</table>

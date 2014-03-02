@@ -5,6 +5,7 @@
 {% block content %}
 
 <button onclick="window.location='/customers/subscription?cid={{customer_details.id}}'">Add To Group</button>
+<button onclick="window.location='/customers/history?id={{customer_details.id}}'">Transaction History</button>
 <p/>
 <script>
 function remove_subscription(id) {
@@ -34,12 +35,16 @@ Payment (Due:{{total_due}}): <input name='payment_amount'/> <button onclick="win
   {% for subscription in group_list %}
    <tr>
    		<td>
+   		  {% if subscription.group.started %}
+   		  &nbsp;
+   		  {% else %}
 		  <a href='#' onclick="remove_subscription({{subscription.id}})">
 		    <img src='/static/remove.png' class='action_icon'/>
 		  </a>
+		  {% endif %}
 		</td>
-		<td><a href="/customers/group_activity?subscription_id={{ subscription.id }}&return_to=customer">{{subscription.group.name}}</td>
-		<td>{{subscription.id}}</td>
+		<td>{{subscription.group.name}}</td>
+		<td><a href="/customers/group_activity?subscription_id={{ subscription.id }}&return_to=customer">{{subscription.id}}</a></td>
 		<td>{{subscription.auction_amount|default:"-"}}</td>
 		<td>{{due_amounts|get_item:subscription.id}}</td>
 		<td><input name="payment_for_{{ subscription.id }}"/></td>

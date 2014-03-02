@@ -55,3 +55,7 @@ button, submit {
 	font-size: 12pt;
 	background-color: lightblue;
 }
+
+span.warning {
+	background-color: #ffcccc;
+}

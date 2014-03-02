@@ -55,14 +55,14 @@ def group_list(request):
     for x in dues:
         due_amounts[x['subscription__group_id']] = x['debit__sum'] - x['credit__sum']
         
+    auctions_done = {}
     auctions_left = {}
-    auction_count = Subscriptions.objects.all().values('group_id').annotate(Count('id'), Count('auction_amount'))
+    auction_count = Subscriptions.objects.all().values('group_id').annotate(Count('auction_amount'))
     for x in auction_count:
-        auctions_left[x['group_id']] = x['id__count'] - x['auction_amount__count']
+        auctions_done[x['group_id']] = x['auction_amount__count']
         
     for g in group_list:
-        if g.id not in auctions_left:
-            auctions_left[g.id] = g.total_months
+        auctions_left[g.id] = g.total_months - auctions_done.get(g.id, 0)
     
     template = loader.get_template('groups/list.html')
     context = RequestContext(request, {
@@ -113,14 +113,15 @@ def new_customer(request):
         user.username = username
         user.set_password(username + request.POST['mobile'])
         user.save()
-        member = Customer(name=request.POST['name'], mobile_number=request.POST['mobile'])
+        member_name = request.POST['name'][0].upper()+request.POST['name'][1:]
+        member = Customer(name=member_name, mobile_number=request.POST['mobile'])
         member.user = user
         member.save()
         return HttpResponseRedirect("/customers/list")
 
 @login_required
 def customer_list(request):
-    customer_list = Customer.objects.all()
+    customer_list = Customer.objects.all().order_by('name')
     due_amounts = {}
     dues = JournalItem.objects.all().values('subscription__member_id').annotate(Sum('debit'),Sum('credit'))
     for x in dues:
@@ -133,26 +134,27 @@ def customer_list(request):
     })
     return HttpResponse(template.render(context))
 
+@login_required
 def delete_customer(request):
     group = Customer.objects.get(id=request.GET["id"])
     group.delete()
     return HttpResponseRedirect("/groups/list")
 
+@login_required
 def customershistory(request):
-    group_list = Group.objects.all()
-    customer_list = Customer.objects.all()
-    context = RequestContext(request, {
-        'customer_list': customer_list,
-        'group_list':group_list
-    })
+    j = JournalItem.objects.filter(subscription__member_id=request.GET['id']).order_by('txn__entry_date')
+    customer_details = Customer.objects.get(id=request.GET['id'])
+    c = RequestContext(request, {'journal': j, 'customer_details': customer_details})
     template = loader.get_template('customers/history.html')
-    return HttpResponse(template.render(context))
+    return HttpResponse(template.render(c))
 
+@login_required
 def customerstransactions(request):
     context = RequestContext(request)
     template = loader.get_template('customers/transactions.html')
     return HttpResponse(template.render(context))
-    
+
+@login_required
 def customersgroups(request): 
     group_list = Subscriptions.objects.filter(member_id=request.GET['id'])
     customer_details = Customer.objects.get(id=request.GET['id'])
@@ -169,7 +171,7 @@ def customersgroups(request):
     template = loader.get_template('customers/grouplist.html')
     return HttpResponse(template.render(context))
     
-
+@login_required
 def subscriptionnew(request):
     if request.method == 'GET':
         if 'gid' in request.GET:
@@ -210,7 +212,8 @@ def subscriptionnew(request):
             return HttpResponseRedirect('/customers/grouplist?id=' + request.POST['customer_id'])
         else:
             return HttpResponse("We don't know your origin")
-      
+
+@login_required 
 def subscriptionslist(request):
     subscription_list = Subscriptions.objects.all()
     template = loader.get_template('subscriptions/list.html')
@@ -220,11 +223,18 @@ def subscriptionslist(request):
     })
     return HttpResponse(template.render(context))
 
-
+@login_required
 def new_auction(request):
     if request.method == 'GET':
         group = Group.objects.get(id=request.GET['id'])
         subscriptions_list = Subscriptions.objects.filter(group_id=request.GET['id'])
+        subscription_count = Subscriptions.objects.filter(group_id=request.GET['id']).count()
+        if subscription_count > group.total_months:
+            return HttpResponse("Group Over subscribed")
+        elif subscription_count < group.total_months:
+            under_subscribed = True
+        else:
+            under_subscribed = False
         auction_month = sum(0 if s.auction_amount is None else 1 for s in subscriptions_list)+1
         subscriptions_list = filter(lambda s:s.auction_amount is None, subscriptions_list)
         template = loader.get_template('groups/auction.html')
@@ -232,6 +242,7 @@ def new_auction(request):
             'subscriptions_list':subscriptions_list,
             'group':group,
             'auction_month':auction_month,
+            'under_subscribed': under_subscribed 
         })
         return HttpResponse(template.render(context))
     elif request.method == 'POST':
@@ -243,7 +254,21 @@ def new_auction(request):
         s.save()
         
         g = s.group
+        if not g.started:
+            g.started = True
+            g.save()
         
+        # Add missing subscriptions
+        subscription_count = Subscriptions.objects.filter(group_id=g.id).count()
+        missing_subscriptions = g.total_months - subscription_count
+        if missing_subscriptions > 0:
+            for i in range(missing_subscriptions):
+                s1 = Subscriptions()
+                s1.member_id = 0
+                s1.group_id = g.id
+                s1.comments = 'Automatically subscribed'
+                s1.save()
+
         monthly_due = g.amount / g.total_months
         dividend = (s.auction_amount - (g.amount * g.commision)/100) / g.total_months
         due_amount = monthly_due - dividend
@@ -266,7 +291,7 @@ def new_auction(request):
         
         return HttpResponseRedirect('/groups/members?id='+ request.POST['group_id']) 
 
-
+@login_required
 def record_customer_payment(request):
     payment_amount = int(request.POST['payment_amount'])
     payments_for = {}
@@ -298,12 +323,14 @@ def record_customer_payment(request):
     # Redirect back to the page 
     return HttpResponseRedirect('/customers/grouplist?id='+request.POST['customer_id'])
 
+@login_required
 def new_mobile_number(request):
     m = Customer.objects.get(id=request.GET['id'])
     m.mobile_number = request.GET['new_number']
     m.save()
     return HttpResponseRedirect('/customers/list')
 
+@login_required
 def remove_subscription(request):
     m = Subscriptions.objects.get(id=request.GET['id'])
     if m:
@@ -316,9 +343,26 @@ def remove_subscription(request):
     else:
         return HttpResponseRedirect('/groups/members?id=%s' % m.group_id)
 
+@login_required
 def subscription_activity(request):
     j = JournalItem.objects.filter(subscription_id=request.GET['subscription_id']).order_by('txn__entry_date')
     s = Subscriptions.objects.get(id=request.GET['subscription_id'])
     c = RequestContext(request, {'journal': j, 'subscription': s})
     template = loader.get_template('customers/subscription_activity.html')
     return HttpResponse(template.render(c))
+
+@login_required
+def change_subscription(request):
+    if request.method == 'GET':
+        c_list = Customer.objects.all().order_by('name')
+        s_details = Subscriptions.objects.get(id=request.GET['id'])
+        ctx = RequestContext(request, {'c_list':c_list, 'subscription':s_details})
+        template = loader.get_template('groups/change_subscription.html')
+        return HttpResponse(template.render(ctx))
+    elif request.method == 'POST':
+        s_id = request.POST['subscription_id']
+        c_id = request.POST['new_subscriber']
+        s_details = Subscriptions.objects.get(id=s_id)
+        s_details.member_id = c_id
+        s_details.save()
+        return HttpResponseRedirect('/groups/members?id=%s' % s_details.group_id)

@@ -1,23 +1,31 @@
 {% extends "site_layout.html" %}
 {% load myfilter %}
-{% block title %}{{customer_details.name}} Transaction History{% endblock %} 
-{% block page_heading %} {{customer_details.name}} Transaction History {% endblock %}
+{% block title %}Activity for subscription {{subscription.id}}{% endblock %} 
+{% block page_heading %}Activity for subscription #{{subscription.id}} {% endblock %} 
 {% block content %}
 
-Mobile: <b>{{customer_details.mobile_number}}</b>
+<table border=1 cellspacing=0 cellpadding=5pt bordercolor=lightgray>
+<tr>
+	<td align="right">
+User: </td><td> <b>{{subscription.member.name}}</b>
+</td></tr>
+<tr> <td align="right">
+Group: </td><td> <b>{{subscription.group.name}}</b>
+</tr>
+</table>
 
 <p/>
+<button onclick="window.location='/customers/history?id={{subscription.member.id}}'">Transaction History</button>
+<button onclick="window.location='/groups/members?id={{subscription.group.id}}'">Back to Group</button>
+<button onclick="window.location='/customers/grouplist?id={{subscription.member.id}}'">Back to User</button>
 
 {% if journal %}
 {{ 0|counter_reset:'credits' }}
 {{ 0|counter_reset:'debits' }}
 {{ 0|counter_reset:'balance' }}
-
 <table border=1 cellspacing=0 cellpadding=5pt>
 	<tr>
 		<th>Date</th>
-		<th>Group</th>
-		<th>Id</th>
 		<th>Credit</th>
 		<th>Debit</th>
 		<th>Balance</th>
@@ -25,8 +33,6 @@ Mobile: <b>{{customer_details.mobile_number}}</b>
 	{% for j in journal %}
 	<tr>
 		<td> {{ j.txn.entry_date }} </td>
-		<td> {{ j.subscription.group.name }} </td>
-		<td> {{ j.subscription.id }} </td>
 		<td align="right"> {{ j.credit }} </td> 
 		<td align="right"> {{ j.debit }} </td> 
 		{% if j.credit %}
@@ -43,7 +49,7 @@ Mobile: <b>{{customer_details.mobile_number}}</b>
 	</tr>
 	{% endfor %}
 	<tr>
-		<td align="right" colspan=3><b> Total</b> </td>
+		<td align="right"><b> Total</b> </td>
 		<td align="right"> <b>
 			{{ 0 | counter_recall:'credits' }}</b>
 		</td>
@@ -57,5 +63,4 @@ Mobile: <b>{{customer_details.mobile_number}}</b>
 {% else %}
 No activity found
 {% endif %}
-
 {% endblock %}
