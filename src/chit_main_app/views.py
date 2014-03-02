@@ -1,7 +1,6 @@
 from django.shortcuts import HttpResponse
 from django.template import RequestContext, loader
-from chit_main_app.models import Group,Customer, Subscriptions, Journal,\
-    JournalItem
+from chit_main_app.models import Group,Customer, Subscriptions, Journal,JournalItem
 from django.http.response import HttpResponseRedirect
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
