@@ -78,7 +78,26 @@ if os.environ.get('SQLITE','False') == 'True':
         'NAME': os.path.join(BASE_DIR, '..', 'chit_data.sqlite3'),
     }
 
+if 'DATABASE_URL' in os.environ:
+    import sys
+    import urlparse
 
+    # Register database schemes in URLs.
+    urlparse.uses_netloc.append('mysql')
+    try:
+        url = urlparse.urlparse(os.environ['DATABASE_URL'])
+        # Update with environment configuration.
+        DATABASES['default'] = {
+            'NAME': url.path[1:],
+            'USER': url.username,
+            'PASSWORD': url.password,
+            'HOST': url.hostname,
+            'PORT': url.port,
+        }
+        if url.scheme == 'mysql':
+            DATABASES['default']['ENGINE'] = 'django.db.backends.mysql'
+    except Exception:
+        print 'Unexpected error:', sys.exc_info()
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.6/topics/i18n/
