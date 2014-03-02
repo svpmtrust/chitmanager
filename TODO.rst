@@ -3,11 +3,12 @@ Admin APplication
 -----------------
 - [X] Add up the amounts to show total daily collection (March 2, 2014)
 - [X] Auto split the amounts in customer payment form (March 2, 2014)
+- [ ] Make group and customer to have soft delete only
 - [ ] Delete an auction
 - [ ] Show the journal entries by group in Transaction History
 - [ ] Show comments all over the place (For customer, group and subscription)
 - [ ] Add comment field for payment
-- [ ] Provie the ability to change the name
+- [ ] Provide the ability to change the customer name
 - [ ] Validations on the server
 
 End User Application
