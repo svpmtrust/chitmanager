@@ -64,7 +64,7 @@ span.warning {
    font-size: 12pt;	
 }
 
-.total-amount {
+.total-amount, .extraCredits {
    font-size: 12pt;
 }
 

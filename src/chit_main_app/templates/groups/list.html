@@ -19,7 +19,7 @@
 	{% for group in group_list %}
 	<tr>
 		<td>
-		{% if group.id == 0 %}
+		{% if group.id == 1 %}
 		&nbsp;
 		{% else %}
 		  <a href="/groups/delete?id={{group.id}}" onclick="return confirm('Are you Sure?')">
@@ -28,7 +28,7 @@
 		{% endif %}
 		</td>
 		<td><a href='/groups/members?id={{group.id}}'>{{ group.name }}</a>
-		{% if not group.id == 0 %}
+		{% if not group.id == 1 %}
 		<a href='/groups/new?id={{group.id}}'><img src='/static/edit.png' class='action_icon'/></a>
 		{% endif %}
 		</td>

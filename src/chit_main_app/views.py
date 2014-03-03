@@ -119,7 +119,7 @@ def new_customer(request):
         
         s = Subscriptions()
         s.member_id = member.id
-        s.group_id = 0
+        s.group_id = 1
         s.comment = 'Auto added to personal credits group'
         s.save()
         
@@ -270,7 +270,7 @@ def new_auction(request):
         if missing_subscriptions > 0:
             for i in range(missing_subscriptions):
                 s1 = Subscriptions()
-                s1.member_id = 0
+                s1.member_id = 1
                 s1.group_id = g.id
                 s1.comments = 'Automatically subscribed'
                 s1.save()
@@ -389,7 +389,7 @@ def daily_collection(request):
                                .order_by('subscription__id'))
             
             # Get any previous credits
-            pc_id = Subscriptions.objects.get(member_id=c.id, group_id=0).id
+            pc_id = Subscriptions.objects.get(member_id=c.id, group_id=1).id
             a = JournalItem.objects.filter(subscription_id=pc_id).aggregate(Sum('debit'),Sum('credit'))
             credit_amount = int(a['credit__sum'] if a['credit__sum'] else 0)
             debit_amount = int(a['debit__sum'] if a['debit__sum'] else 0)

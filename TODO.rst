@@ -1,8 +1,10 @@
 
-Admin APplication
+Admin Application
 -----------------
 - [X] Add up the amounts to show total daily collection (March 2, 2014)
 - [X] Auto split the amounts in customer payment form (March 2, 2014)
+- [X] [BUG] Having zero (0) as foriegn key is not working in MQSQL
+- [X] [BUG] Splitting the values when personal credits is at the begin is incorrect
 - [ ] Make group and customer to have soft delete only
 - [ ] Delete an auction
 - [ ] Show the journal entries by group in Transaction History
