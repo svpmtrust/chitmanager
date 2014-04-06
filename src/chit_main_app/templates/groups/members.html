@@ -41,6 +41,13 @@ function remove_subscription(id) {
 		return false;
 	}
 }
+function edit_auctiondate(id) {
+	new_date = prompt('Enter new auction date: ')
+	if (new_date) {
+		window.location = '/groups/auction_date?id='+id+'&new_date='+new_date
+	}
+	return false
+}
 </script>
 
 <h3>Group Members</h3>
@@ -80,8 +87,17 @@ function remove_subscription(id) {
 		</td>
 		<td>{{ subscription.member.name }}</td>
 		<td><a href='/customers/group_activity?subscription_id={{subscription.id}}&return_to=group'>{{subscription.id}}</a></td>
-		<td>{{subscription.auction_date|default_if_none:"-"}}</td>
-		<td>{{subscription.auction_amount|default_if_none:"-"}}</td>
+		<td>{{subscription.auction_date|default_if_none:"-"}}
+		<a href='#' onclick="return edit_auctiondate({{subscription.id}})">
+		    <img src='/static/edit.png' class='action_icon' align='right' title ='Edit Auction Date' />
+		  </a>
+		</td>
+		<td>{{subscription.auction_amount|default_if_none:"-"}}
+   		   <a href='#' onclick="return change_auctiondate({{subscription.id}})">
+		    <img src='/static/edit.png' class='action_icon' align='right' title ='Delete Auction' />
+		  </a>
+			</td>
+		
 		<td>{{subscription.auction_number|default:"-"}}</td>
 		<td>{{due_amounts|get_item:subscription.id}}</td>
 	</tr>

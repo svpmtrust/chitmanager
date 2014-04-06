@@ -147,6 +147,12 @@ def delete_customer(request):
     return HttpResponseRedirect("/groups/list")
 
 @login_required
+def delete_auction(request):
+    subscriptions_list = Subscriptions.objects.filter(group_id=request.GET['id'])
+    subscriptions_list.delete()
+    return HttpResponseRedirect("/groups/auction")
+
+@login_required
 def customershistory(request):
     j = JournalItem.objects.filter(subscription__member_id=request.GET['id']).order_by('txn__entry_date')
     customer_details = Customer.objects.get(id=request.GET['id'])
@@ -182,7 +188,7 @@ def subscriptionnew(request):
     if request.method == 'GET':
         if 'gid' in request.GET:
             group = Group.objects.get(id=request.GET['gid'])
-            customer_list = Customer.objects.all()
+            customer_list = Customer.objects.all().order_by('name')
             group_list = Group.objects.all()
             template = loader.get_template('customers/subscription.html')
             context = RequestContext(request, {
@@ -335,6 +341,13 @@ def new_mobile_number(request):
     m.mobile_number = request.GET['new_number']
     m.save()
     return HttpResponseRedirect('/customers/list')
+
+@login_required
+def new_auction_date(request):
+    a = Subscriptions.objects.get(id=request.GET['id'])
+    a.auction_date = request.GET['new_date']
+    a.save()
+    return HttpResponseRedirect('/groups/members?id=%s' % a.group_id)
 
 @login_required
 def remove_subscription(request):
