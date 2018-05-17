@@ -1,4 +1,4 @@
-django
+django==1.6
 mysql-python
 gunicorn
 dj_static
