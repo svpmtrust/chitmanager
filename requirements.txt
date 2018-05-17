@@ -1,4 +1,4 @@
-django
-mysql-python
-gunicorn
-dj_static
+django==1.6
+mysql-python==1.2.5
+gunicorn==19.8.1
+dj_static==0.0.6
