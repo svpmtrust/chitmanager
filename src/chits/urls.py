@@ -1,13 +1,14 @@
-from django.conf.urls import patterns, url
+from django.conf.urls import url
 import chit_main_app.views
 from django.views.generic.base import RedirectView
+import django.contrib.auth.views as auth_views
 
-urlpatterns = patterns('',
+urlpatterns = [
     # Basic Stuff
     url(r'^$', RedirectView.as_view(url='/home')),
-    url(r'^login/$', 'django.contrib.auth.views.login'),
+    url(r'^login/$', auth_views.login),
     url(r'^home/$', chit_main_app.views.homepage),
-    url(r'^logout/$', 'django.contrib.auth.views.logout', name='logout'),
+    url(r'^logout/$', auth_views.logout, name='logout'),
     
     # Group operations
     url(r'^groups/new$', chit_main_app.views.new_group),
@@ -24,11 +25,10 @@ urlpatterns = patterns('',
     url(r'^customers/list$', chit_main_app.views.customer_list),
     url(r'^customers/delete$', chit_main_app.views.delete_customer),
     url(r'^customers/grouplist$', chit_main_app.views.customersgroups),
-    url(r'^customers/history$', chit_main_app.views.customershistory),
-    url(r'^customers/transactions$', chit_main_app.views.customerstransactions),    
+    url(r'^customers/history$', chit_main_app.views.customershistory),  
     url(r'^customers/subscription$', chit_main_app.views.subscriptionnew),
     url(r'^customers/record_payment$', chit_main_app.views.record_customer_payment),
     url(r'^customers/mobile_number$', chit_main_app.views.new_mobile_number),
     url(r'^customers/group_activity$', chit_main_app.views.subscription_activity),
     url(r'^customers/daily_collection$', chit_main_app.views.daily_collection),
-)
+]

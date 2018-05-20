@@ -1,5 +1,5 @@
 from django.shortcuts import HttpResponse
-from django.template import RequestContext, loader
+from django.template import loader
 from chit_main_app.models import Group,Customer, Subscriptions, Journal,JournalItem
 from django.http.response import HttpResponseRedirect
 from django.contrib.auth.models import User
@@ -9,6 +9,7 @@ import itertools
 from django.db.models import Sum
 from datetime import date, datetime
 from django.db.models.aggregates import Count
+import json
 
 @login_required
 def homepage(request):
@@ -20,6 +21,28 @@ def homepage(request):
     return TemplateResponse(request, template)
 
 @login_required
+def get_daily_collection(request):
+    date = request.GET.get('date', None)
+    if date:
+        # Get a list of customers and initialize the dialy collection to Nothing for each customer
+        # daily_collection = dict((x.id, None) for x in models.Customer.objects.all())
+        daily_collection = {}
+        txn_set = set()
+        for x in JournalItem.objects.filter(txn__entry_date=request.GET['date'], txn__entry_type='P'):
+            if x.txn_id in txn_set:
+                continue
+            txn_set.add(x.txn_id)
+
+            member_id = x.subscription.member_id
+            if member_id in daily_collection:
+                daily_collection[member_id] += x.txn.amount
+            else:
+                daily_collection[member_id] = x.txn.amount
+        return HttpResponse(json.dumps(daily_collection), content_type="application/json")
+    else:
+        return HttpResponse('Missing date in the request', status=400)
+
+@login_required
 def new_group(request):
     if request.method == 'GET':
         if 'id' in request.GET:
@@ -27,9 +50,9 @@ def new_group(request):
         else:
             group_details = Group()
         template = loader.get_template('groups/new.html')
-        context = RequestContext(request, {
+        context = {
                 'group_details': group_details
-            })
+            }
         return HttpResponse(template.render(context))    
     elif request.method == 'POST':
         if 'id' in request.POST:
@@ -64,11 +87,11 @@ def group_list(request):
         auctions_left[g.id] = g.total_months - auctions_done.get(g.id, 0)
     
     template = loader.get_template('groups/list.html')
-    context = RequestContext(request, {
+    context = {
         'group_list': group_list,
         'due_amounts': due_amounts,
         'auctions_left': auctions_left
-    })
+    }
     return HttpResponse(template.render(context))
 
 @login_required
@@ -83,13 +106,13 @@ def group_members(request):
         for x in dues:
             due_amounts[x['subscription_id']] = x['debit__sum'] - x['credit__sum']
         template = loader.get_template('groups/members.html')
-        context = RequestContext(request, {
+        context = {
             'member_list': member_list,
             'group_details':group_details,
             'remaining_months': remaining_months,
             'due_amounts': due_amounts,
             'total_due_amount': sum(due_amounts.values())
-        })
+        }
         return HttpResponse(template.render(context))        
     except Subscriptions.DoesNotExist:
         return HttpResponse("No members exist in this group.")
@@ -103,9 +126,8 @@ def delete_group(request):
 @login_required
 def new_customer(request):
     if request.method == 'GET':
-        context = RequestContext(request)
         template = loader.get_template('customers/new.html')
-        return HttpResponse(template.render(context))    
+        return HttpResponse(template.render({}))    
     elif request.method == 'POST':
         username = request.POST['username']
         user = User()
@@ -134,10 +156,10 @@ def customer_list(request):
         due_amounts[x['subscription__member_id']] = x['debit__sum'] - x['credit__sum']
     
     template = loader.get_template('customers/list.html')
-    context = RequestContext(request, {
+    context = {
         'customer_list': customer_list,
         'due_amounts': due_amounts
-    })
+    }
     return HttpResponse(template.render(context))
 
 @login_required
@@ -156,15 +178,9 @@ def delete_auction(request):
 def customershistory(request):
     j = JournalItem.objects.filter(subscription__member_id=request.GET['id']).order_by('txn__entry_date')
     customer_details = Customer.objects.get(id=request.GET['id'])
-    c = RequestContext(request, {'journal': j, 'customer_details': customer_details})
+    c = {'journal': j, 'customer_details': customer_details}
     template = loader.get_template('customers/history.html')
     return HttpResponse(template.render(c))
-
-@login_required
-def customerstransactions(request):
-    context = RequestContext(request)
-    template = loader.get_template('customers/transactions.html')
-    return HttpResponse(template.render(context))
 
 @login_required
 def customersgroups(request): 
@@ -174,12 +190,12 @@ def customersgroups(request):
     dues = JournalItem.objects.filter(subscription__member_id=request.GET['id']).values('subscription_id').annotate(Sum('debit'),Sum('credit'))
     for x in dues:
         due_amounts[x['subscription_id']] = x['debit__sum'] - x['credit__sum']
-    context = RequestContext(request, {
+    context = {
         'group_list':group_list,
         'customer_details':customer_details,
         'due_amounts': due_amounts,
         'total_due': sum(due_amounts.itervalues())
-        })
+    }
     template = loader.get_template('customers/grouplist.html')
     return HttpResponse(template.render(context))
     
@@ -191,11 +207,11 @@ def subscriptionnew(request):
             customer_list = Customer.objects.all().order_by('name')
             group_list = Group.objects.all()
             template = loader.get_template('customers/subscription.html')
-            context = RequestContext(request, {
+            context = {
                 'customer_list': customer_list,
                 'group_list':group_list,
                 'group': group
-                })  
+            }
             return HttpResponse(template.render(context))
                       
         else:
@@ -203,11 +219,11 @@ def subscriptionnew(request):
             customer_list = Customer.objects.all()
             group_list = Group.objects.all()
             template = loader.get_template('customers/subscription.html')
-            context = RequestContext(request, {
+            context = {
                 'customer_list': customer_list,
                 'group_list':group_list,
                 'customer': customer
-            })
+            }
         return HttpResponse(template.render(context)) 
     elif request.method == 'POST':
         customer_list = request.POST.getlist('to_customer_list')
@@ -229,10 +245,9 @@ def subscriptionnew(request):
 def subscriptionslist(request):
     subscription_list = Subscriptions.objects.all()
     template = loader.get_template('subscriptions/list.html')
-    context = RequestContext(request, {
+    context = {
         'subscription_list': subscription_list,
-        
-    })
+    }
     return HttpResponse(template.render(context))
 
 @login_required
@@ -250,12 +265,12 @@ def new_auction(request):
         auction_month = sum(0 if s.auction_amount is None else 1 for s in subscriptions_list)+1
         subscriptions_list = filter(lambda s:s.auction_amount is None, subscriptions_list)
         template = loader.get_template('groups/auction.html')
-        context = RequestContext(request, {
+        context = {
             'subscriptions_list':subscriptions_list,
             'group':group,
             'auction_month':auction_month,
             'under_subscribed': under_subscribed 
-        })
+        }
         return HttpResponse(template.render(context))
     elif request.method == 'POST':
         # Mark the subscription for the auction
@@ -318,6 +333,7 @@ def record_customer_payment(request):
     j.entry_date = request.POST['payment_date']
     j.comments = 'No Comments'
     j.entry_type = j.PAYMENT
+    j.member_id = request.POST['customer_id']
     j.save()
         
     # Create due amounts after subtracting dividends
@@ -366,18 +382,16 @@ def remove_subscription(request):
 def subscription_activity(request):
     j = JournalItem.objects.filter(subscription_id=request.GET['subscription_id']).order_by('txn__entry_date')
     s = Subscriptions.objects.get(id=request.GET['subscription_id'])
-    c = RequestContext(request, {'journal': j, 'subscription': s})
     template = loader.get_template('customers/subscription_activity.html')
-    return HttpResponse(template.render(c))
+    return HttpResponse(template.render({'journal': j, 'subscription': s}))
 
 @login_required
 def change_subscription(request):
     if request.method == 'GET':
         c_list = Customer.objects.all().order_by('name')
         s_details = Subscriptions.objects.get(id=request.GET['id'])
-        ctx = RequestContext(request, {'c_list':c_list, 'subscription':s_details})
         template = loader.get_template('groups/change_subscription.html')
-        return HttpResponse(template.render(ctx))
+        return HttpResponse(template.render({'c_list':c_list, 'subscription':s_details}))
     elif request.method == 'POST':
         s_id = request.POST['subscription_id']
         c_id = request.POST['new_subscriber']
@@ -388,6 +402,12 @@ def change_subscription(request):
 
 @login_required
 def daily_collection(request):
+    if(request.method=='GET'):
+        return get_daily_collection(request)
+    
+    if(request.method != 'POST'):
+        return HttpResponse('Request must be either GET or POST', status=500)
+
     c_list = Customer.objects.all().order_by('name')
     for c in c_list:
         cust_payment = request.POST.get('customer_collection_%s' % c.id)
@@ -413,46 +433,37 @@ def daily_collection(request):
             j.entry_date = request.POST['collection_date']
             j.amount = cust_payment
             j.entry_type = j.PAYMENT
+            j.member = c
             j.save()
             
             # If there any old credit, add it to the current amount
-            if old_credit != 0:
-                j1 = JournalItem()
-                j1.txn = j
-                j1.subscription_id = pc_id
-                cust_payment += old_credit
-
-                if(old_credit>0):
-                    j1.debit, j1.credit = old_credit, 0
-                    j1.credit = 0
-                else:
-                    # We don't expect this case.  But if the customer
-                    # Owe us something for what ever reason, we reduce it
-                    # from the amount
-                    j1.debit, j1.credit = 0, -old_credit
-                j1.save()
-            
+            available_amount = old_credit + cust_payment
             for s in dues:
                 s_id = s['subscription_id']
                 due = s['debit__sum'] - s['credit__sum']
-                if due == 0:
+                if due <= 0:
                     continue
                 
                 j1 = JournalItem()
                 j1.subscription_id = s_id
                 j1.txn = j
                 j1.debit = 0
-                j1.credit = min(due, cust_payment)
+                j1.credit = min(due, available_amount)
                 j1.save()
-                cust_payment -= j1.credit
-                if cust_payment == 0:
+                available_amount -= j1.credit
+                if available_amount == 0:
                     break
-            else:
+            
+            if available_amount != old_credit:
                 j1 = JournalItem()
                 j1.txn = j
                 j1.credit = cust_payment
                 j1.subscription_id = pc_id
                 j1.debit = 0
+                if old_credit < available_amount:
+                    j1.credit = available_amount - old_credit
+                else:
+                    j1.debit = old_credit - available_amount
                 j1.save()
 
     return HttpResponseRedirect('/customers/list')
