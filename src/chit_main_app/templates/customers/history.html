@@ -14,8 +14,7 @@ Mobile: <b>{{customer_details.mobile_number}}</b>
 <table border=1 cellspacing=0 cellpadding=5pt>
 	<tr>
 		<th>Date</th>
-		<th>Subscription</th>
-		<th>Group</th>
+		<th>Detail</th>
 		<th>Credit</th>
 		<th>Debit</th>
 		<th>Balance</th>
@@ -24,23 +23,22 @@ Mobile: <b>{{customer_details.mobile_number}}</b>
 	{% for item in journal %}
 	{% with j=item.item %}
 	{% if item.type == 'journal_item' %}
-	<tr>
+	<tr class="smalldetail">
 		<td> &nbsp; </td>
-		<td class="smalldetail"> {{ j.subscription.id }} </td>
-		<td class="smalldetail"> {{ j.subscription.group.name }} </td>
+		<td class="smalldetail"> {{ j.subscription.id }} - {{ j.subscription.group.name }} </td>
 		<td align="right" class="smalldetail"> {{ j.credit }} </td> 
 		<td align="right" class="smalldetail"> {{ j.debit }} </td> 
 		<td align="right" class="smalldetail"> {{ item.balance }} </td>
 		<td>&nbsp;</td>
 	</tr>
 	{% else %}
-	<tr>
+	<tr class="maintxn">
 		<td> {{ j.entry_date }} </td>
-		<td colspan="2">  {{ item.comment }} </td>
-		<td> {{item.credit}} </td>
-		<td> {{item.debit}} </td>
+		<td>  {{ item.comment }} </td>
+		<td align="right" > {{item.credit}} </td>
+		<td align="right" > {{item.debit}} </td>
 		<td>&nbsp;</td>
-		<td> {{item.balance}} </td>
+		<td align="right" > {{item.balance}} </td>
 	</tr>
 	{% endif %}
 	{% endwith %}

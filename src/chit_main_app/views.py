@@ -185,6 +185,7 @@ def customershistory(request):
     prvious_txn = None
     previous_data = None
     the_balance = 0
+    subscription_balances = defaultdict(int)
     for j_item in ji_list:
         if prvious_txn == None or j_item.txn.id != prvious_txn.id:
             previous_data = {
@@ -195,11 +196,30 @@ def customershistory(request):
                 "credit": j_item.txn.amount if j_item.txn.amount else ""
             }
             j.append(previous_data)
-        j.append({"type":"journal_item", "item": j_item})
+        
         previous_data["balance"] += j_item.credit - j_item.debit
         the_balance += j_item.credit - j_item.debit
+        credit = None
+        debit = None
         if(j_item.txn.entry_type == 'A'):
             previous_data["debit"] = j_item.debit
+            subscription_balances[j_item.subscription_id] += j_item.debit
+            debit = j_item.debit
+        else:
+            if not j_item.txn.amount:
+                previous_data["credit"] = j_item.credit
+            subscription_balances[j_item.subscription_id] -= j_item.credit
+            subscription_balances[j_item.subscription_id] += j_item.debit
+            credit = j_item.credit
+        
+        print j_item.subscription_id, j_item.credit, j_item.debit, subscription_balances[j_item.subscription_id]
+
+        j.append({
+            "type":"journal_item", 
+            "balance": subscription_balances[j_item.subscription_id],
+            "credit": credit or "",
+            "debit": debit or "",
+            "item": j_item})
         prvious_txn = j_item.txn
     
     c = {'journal': j, 'customer_details': customer_details}
