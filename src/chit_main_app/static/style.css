@@ -68,6 +68,10 @@ span.warning {
    font-size: 12pt;
 }
 
+.action_icon:hover {
+    cursor: pointer;
+}
+
 td.smalldetail {
     font-size: 12pt;
     font-style: italic;

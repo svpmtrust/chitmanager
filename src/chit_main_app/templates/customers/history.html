@@ -4,6 +4,28 @@
 {% block page_heading %} {{customer_details.name}} Transaction History {% endblock %}
 {% block content %}
 
+<script>
+$(document).ready(function(){
+	console.log("Document is ready, registering click on action_icon")
+	$(".action_icon").click(function(event){
+		respone = confirm("Are you sure you want to delete?")
+		if(respone) {
+			console.log("OK TO DELETE")
+			$.post('/customers/delete_payment', 
+				{'id':event.target.getAttribute('txnid')}, 
+				function(){
+					console.log("Deletion successful")
+					window.location = window.location
+				}
+			)
+		} else {
+			console.log("NOKAY TO DELETE")
+		}
+	})
+});
+</script>
+
+Name: <b>{{customer_details.name}}</b><br/>
 Mobile: <b>{{customer_details.mobile_number}}</b>
 
 <p/>
@@ -13,6 +35,7 @@ Mobile: <b>{{customer_details.mobile_number}}</b>
 
 <table border=1 cellspacing=0 cellpadding=5pt>
 	<tr>
+		<th>&nbsp;</th>
 		<th>Date</th>
 		<th>Detail</th>
 		<th>Credit</th>
@@ -25,6 +48,7 @@ Mobile: <b>{{customer_details.mobile_number}}</b>
 	{% if item.type == 'journal_item' %}
 	<tr class="smalldetail">
 		<td> &nbsp; </td>
+		<td>&nbsp;</td>
 		<td class="smalldetail"> {{ j.subscription.id }} - {{ j.subscription.group.name }} </td>
 		<td align="right" class="smalldetail"> {{ j.credit }} </td> 
 		<td align="right" class="smalldetail"> {{ j.debit }} </td> 
@@ -33,6 +57,12 @@ Mobile: <b>{{customer_details.mobile_number}}</b>
 	</tr>
 	{% else %}
 	<tr class="maintxn">
+		{% if j.entry_type == "P" %}
+		<td style="background:white">
+			<img src="/static/remove.png" class="action_icon" txnid="{{j.id}}"/></td>
+		{% else %}
+		<td style="background:white"> &nbsp; </td>
+		{% endif %}
 		<td> {{ j.entry_date }} </td>
 		<td>  {{ item.comment }} </td>
 		<td align="right" > {{item.credit}} </td>

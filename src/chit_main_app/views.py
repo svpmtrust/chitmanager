@@ -197,8 +197,8 @@ def customershistory(request):
             }
             j.append(previous_data)
         
-        previous_data["balance"] += j_item.credit - j_item.debit
-        the_balance += j_item.credit - j_item.debit
+        previous_data["balance"] -= j_item.credit - j_item.debit
+        the_balance -= j_item.credit - j_item.debit
         credit = None
         debit = None
         if(j_item.txn.entry_type == 'A'):
@@ -211,8 +211,6 @@ def customershistory(request):
             subscription_balances[j_item.subscription_id] -= j_item.credit
             subscription_balances[j_item.subscription_id] += j_item.debit
             credit = j_item.credit
-        
-        print j_item.subscription_id, j_item.credit, j_item.debit, subscription_balances[j_item.subscription_id]
 
         j.append({
             "type":"journal_item", 
@@ -511,3 +509,8 @@ def daily_collection(request):
                 j1.save()
 
     return HttpResponseRedirect('/customers/list')
+
+def delete_payment(request):
+    j = Journal.objects.get(id=request.POST['id'])
+    j.delete()
+    return HttpResponse("Done")

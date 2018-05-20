@@ -31,4 +31,5 @@ urlpatterns = [
     url(r'^customers/mobile_number$', chit_main_app.views.new_mobile_number),
     url(r'^customers/group_activity$', chit_main_app.views.subscription_activity),
     url(r'^customers/daily_collection$', chit_main_app.views.daily_collection),
+    url(r'^customers/delete_payment$', chit_main_app.views.delete_payment),
 ]
