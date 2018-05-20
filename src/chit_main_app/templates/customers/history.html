@@ -9,50 +9,42 @@ Mobile: <b>{{customer_details.mobile_number}}</b>
 <p/>
 
 {% if journal %}
-{{ 0|counter_reset:'credits' }}
-{{ 0|counter_reset:'debits' }}
-{{ 0|counter_reset:'balance' }}
+{{ 0|counter_reset:'ALL' }}
 
 <table border=1 cellspacing=0 cellpadding=5pt>
 	<tr>
 		<th>Date</th>
-		<th>Group</th>
 		<th>Subscription</th>
+		<th>Group</th>
 		<th>Credit</th>
 		<th>Debit</th>
 		<th>Balance</th>
+		<th>Overall Balance</th>
 	</tr>
-	{% for j in journal %}
+	{% for item in journal %}
+	{% with j=item.item %}
+	{% if item.type == 'journal_item' %}
 	<tr>
-		<td> {{ j.txn.entry_date }} </td>
-		<td> {{ j.subscription.group.name }} </td>
-		<td> {{ j.subscription.id }} </td>
-		<td align="right"> {{ j.credit }} </td> 
-		<td align="right"> {{ j.debit }} </td> 
-		{% if j.credit %}
-		<td align="right">
-			{{ j.credit|counter_subtract:'balance' }} 
-			{{ j.credit|counter_add_only:'credits' }} 
-		</td>
-		{% else %}
-		<td align="right">
-			{{ j.debit|counter_add:'balance' }}
-			{{ j.debit|counter_add_only:'debits' }}
-		</td>
-		{% endif %}
-	</tr>
-	{% endfor %}
-	<tr>
-		<td align="right" colspan=3><b> Total</b> </td>
-		<td align="right"> <b>
-			{{ 0 | counter_recall:'credits' }}</b>
-		</td>
-		<td align="right"><b>
-			{{ 0 | counter_recall:'debits' }}</b>
-		</td>
+		<td> &nbsp; </td>
+		<td class="smalldetail"> {{ j.subscription.id }} </td>
+		<td class="smalldetail"> {{ j.subscription.group.name }} </td>
+		<td align="right" class="smalldetail"> {{ j.credit }} </td> 
+		<td align="right" class="smalldetail"> {{ j.debit }} </td> 
+		<td align="right" class="smalldetail"> {{ item.balance }} </td>
 		<td>&nbsp;</td>
-		
 	</tr>
+	{% else %}
+	<tr>
+		<td> {{ j.entry_date }} </td>
+		<td colspan="2">  {{ item.comment }} </td>
+		<td> {{item.credit}} </td>
+		<td> {{item.debit}} </td>
+		<td>&nbsp;</td>
+		<td> {{item.balance}} </td>
+	</tr>
+	{% endif %}
+	{% endwith %}
+	{% endfor %}
 </table>
 {% else %}
 No activity found

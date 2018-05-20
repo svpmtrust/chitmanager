@@ -68,6 +68,10 @@ span.warning {
    font-size: 12pt;
 }
 
+td.smalldetail {
+    font-size: 12pt;
+}
+
 tr:nth-child(even) {
 	background-color: #f0f0ff;
 }

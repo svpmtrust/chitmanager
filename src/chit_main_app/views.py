@@ -10,6 +10,7 @@ from django.db.models import Sum
 from datetime import date, datetime
 from django.db.models.aggregates import Count
 import json
+from collections import defaultdict
 
 @login_required
 def homepage(request):
@@ -176,8 +177,31 @@ def delete_auction(request):
 
 @login_required
 def customershistory(request):
-    j = JournalItem.objects.filter(subscription__member_id=request.GET['id']).order_by('txn__entry_date')
+    ji_list = JournalItem.objects.filter(subscription__member_id=request.GET['id']).order_by('txn__entry_date')
     customer_details = Customer.objects.get(id=request.GET['id'])
+    j = []
+    balances = defaultdict(int)
+
+    prvious_txn = None
+    previous_data = None
+    the_balance = 0
+    for j_item in ji_list:
+        if prvious_txn == None or j_item.txn.id != prvious_txn.id:
+            previous_data = {
+                "type": "journal", 
+                "comment": "Auction: " + j_item.subscription.group.name if j_item.txn.entry_type=='A' else "Payment",
+                "item": j_item.txn,
+                "balance": the_balance,
+                "credit": j_item.txn.amount if j_item.txn.amount else ""
+            }
+            j.append(previous_data)
+        j.append({"type":"journal_item", "item": j_item})
+        previous_data["balance"] += j_item.credit - j_item.debit
+        the_balance += j_item.credit - j_item.debit
+        if(j_item.txn.entry_type == 'A'):
+            previous_data["debit"] = j_item.debit
+        prvious_txn = j_item.txn
+    
     c = {'journal': j, 'customer_details': customer_details}
     template = loader.get_template('customers/history.html')
     return HttpResponse(template.render(c))
