@@ -21,18 +21,11 @@ SECRET_KEY = 'nc!i+vh@y=b5s9xld(yb9#dc=6(7xme7g$2qo7m406h&qja%(c'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
-
-TEMPLATE_DEBUG = True
-
-ALLOWED_HOSTS = []
-
+ALLOWED_HOSTS = ['*']
 LOGIN_REDIRECT_URL = '/home/'
 LOGIN_URL = '/login'
 
-
-
 # Application definition
-
 INSTALLED_APPS = (
     'chit_main_app',
     'django.contrib.admin',
@@ -42,21 +35,36 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'gunicorn'
-   )
+)
+
+TEMPLATES = [
+    {
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'DIRS': [],
+        'APP_DIRS': True,
+        'OPTIONS': {
+            'context_processors': [
+                'django.template.context_processors.debug',
+                'django.template.context_processors.request',
+                'django.contrib.auth.context_processors.auth',
+                'django.contrib.messages.context_processors.messages',
+                'django.template.context_processors.csrf',
+            ],
+        },
+    },
+]
 
 MIDDLEWARE_CLASSES = (
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
+    # 'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 )
 
 ROOT_URLCONF = 'chits.urls'
-
 WSGI_APPLICATION = 'chits.wsgi.application'
-
 
 # Database
 # https://docs.djangoproject.com/en/1.6/ref/settings/#databases
@@ -64,13 +72,14 @@ WSGI_APPLICATION = 'chits.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME':'chitmanager',
-         'USER': 'root',
-         'PASSWORD':"karthik",
-         'HOST': '',
+        #'NAME':'chitmanager',
+        'NAME': 'heroku_e18935074c20bff',
+        'USER': 'root',
+        'PASSWORD':'',
+        'HOST': '',
         'PORT': '',
     }
-    }
+}
 
 if os.environ.get('SQLITE','False') == 'True':
     DATABASES['default'] = {
@@ -103,15 +112,10 @@ if 'DATABASE_URL' in os.environ:
 # https://docs.djangoproject.com/en/1.6/topics/i18n/
 
 LANGUAGE_CODE = 'en-us'
-
 TIME_ZONE = 'UTC'
-
 USE_I18N = True
-
 USE_L10N = True
-
 USE_TZ = True
-
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.6/howto/static-files/
@@ -151,7 +155,7 @@ LOGGING = {
     },
     'loggers': {
         'django': {
-            'handlers': ['null'],
+            'handlers': ['console'],
             'propagate': True,
             'level': 'INFO',
         },

@@ -29,6 +29,11 @@ $(function() {
 		$('#total_collection').val(total)
 	
 	})
+	$('#datepicker').change(function(){
+		$.get('/customers/daily_collection',{date:$('#datepicker').val()}).done(function(data){
+			for(id in data){ $("#current-amount-"+id).html(data[id]) }
+		})
+	})
 });
 
 </script>
@@ -43,12 +48,13 @@ $(function() {
 	<tr> <td>
 	<table border="1" cellspacing=0 cellpadding=5>
 		<tr>
-			<th>&nbsp</th>
+			<th>&nbsp;</th>
 			<th>Name</th>
 			<th>&nbsp;</th>
 			<th>Mobile Number</th>
 			<th>Due</th>
-			<th>Payment</th>
+			<th>Current<br/>Payment</th>
+			<th>Additional<br/>Payment</th>
 		</tr>
 		{% for customer in customer_list %}
 		<tr>
@@ -67,7 +73,8 @@ $(function() {
 			<td>{{ customer.mobile_number }} <a href='#' onclick="return change_mobile({{ customer.id }})">
 				<img src='/static/edit.png' class='action_icon' title='Change mobile number'/></a></td>
 			<td><a href="/customers/grouplist?id={{customer.id}}">{{ due_amounts|get_item:customer.id }}</a></td>
-			<td><input type="text" class='payment-amount' dir="rtl" name='customer_collection_{{customer.id}}' size="10"></td>
+			<td align="right"><span id="current-amount-{{customer.id}}">&nbsp;</span></td>
+			<td align="right"><input type="text" class='payment-amount' dir="rtl" name='customer_collection_{{customer.id}}' size="10"></td>
 		</tr>
 		{% endfor %}
 	</table>

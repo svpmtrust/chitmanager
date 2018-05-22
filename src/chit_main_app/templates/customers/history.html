@@ -4,55 +4,75 @@
 {% block page_heading %} {{customer_details.name}} Transaction History {% endblock %}
 {% block content %}
 
+<script>
+$(document).ready(function(){
+	console.log("Document is ready, registering click on action_icon")
+	$(".action_icon").click(function(event){
+		respone = confirm("Are you sure you want to delete?")
+		if(respone) {
+			console.log("OK TO DELETE")
+			$.post('/customers/delete_payment', 
+				{'id':event.target.getAttribute('txnid')}, 
+				function(){
+					console.log("Deletion successful")
+					window.location = window.location
+				}
+			)
+		} else {
+			console.log("NOKAY TO DELETE")
+		}
+	})
+});
+</script>
+
+Name: <b>{{customer_details.name}}</b><br/>
 Mobile: <b>{{customer_details.mobile_number}}</b>
 
 <p/>
 
 {% if journal %}
-{{ 0|counter_reset:'credits' }}
-{{ 0|counter_reset:'debits' }}
-{{ 0|counter_reset:'balance' }}
+{{ 0|counter_reset:'ALL' }}
 
 <table border=1 cellspacing=0 cellpadding=5pt>
 	<tr>
+		<th>&nbsp;</th>
 		<th>Date</th>
-		<th>Group</th>
-		<th>Subscription</th>
+		<th>Detail</th>
 		<th>Credit</th>
 		<th>Debit</th>
 		<th>Balance</th>
+		<th>Overall Balance</th>
 	</tr>
-	{% for j in journal %}
-	<tr>
-		<td> {{ j.txn.entry_date }} </td>
-		<td> {{ j.subscription.group.name }} </td>
-		<td> {{ j.subscription.id }} </td>
-		<td align="right"> {{ j.credit }} </td> 
-		<td align="right"> {{ j.debit }} </td> 
-		{% if j.credit %}
-		<td align="right">
-			{{ j.credit|counter_subtract:'balance' }} 
-			{{ j.credit|counter_add_only:'credits' }} 
-		</td>
-		{% else %}
-		<td align="right">
-			{{ j.debit|counter_add:'balance' }}
-			{{ j.debit|counter_add_only:'debits' }}
-		</td>
-		{% endif %}
-	</tr>
-	{% endfor %}
-	<tr>
-		<td align="right" colspan=3><b> Total</b> </td>
-		<td align="right"> <b>
-			{{ 0 | counter_recall:'credits' }}</b>
-		</td>
-		<td align="right"><b>
-			{{ 0 | counter_recall:'debits' }}</b>
-		</td>
+	{% for item in journal %}
+	{% with j=item.item %}
+	{% if item.type == 'journal_item' %}
+	<tr class="smalldetail">
+		<td> &nbsp; </td>
 		<td>&nbsp;</td>
-		
+		<td class="smalldetail"> {{ j.subscription.id }} - {{ j.subscription.group.name }} </td>
+		<td align="right" class="smalldetail"> {{ j.credit }} </td> 
+		<td align="right" class="smalldetail"> {{ j.debit }} </td> 
+		<td align="right" class="smalldetail"> {{ item.balance }} </td>
+		<td>&nbsp;</td>
 	</tr>
+	{% else %}
+	<tr class="maintxn">
+		{% if j.entry_type == "P" %}
+		<td style="background:white">
+			<img src="/static/remove.png" class="action_icon" txnid="{{j.id}}"/></td>
+		{% else %}
+		<td style="background:white"> &nbsp; </td>
+		{% endif %}
+		<td> {{ j.entry_date }} </td>
+		<td>  {{ item.comment }} </td>
+		<td align="right" > {{item.credit}} </td>
+		<td align="right" > {{item.debit}} </td>
+		<td>&nbsp;</td>
+		<td align="right" > {{item.balance}} </td>
+	</tr>
+	{% endif %}
+	{% endwith %}
+	{% endfor %}
 </table>
 {% else %}
 No activity found

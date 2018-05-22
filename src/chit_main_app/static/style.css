@@ -68,6 +68,25 @@ span.warning {
    font-size: 12pt;
 }
 
+.action_icon:hover {
+    cursor: pointer;
+}
+
+td.smalldetail {
+    font-size: 12pt;
+    font-style: italic;
+}
+
+tr.smalldetail:nth-child(even),  tr.smalldetail:nth-child(odd) {
+    background-color: white;
+    color: #333333;
+}
+
+tr.maintxn:nth-child(even),  tr.maintxn:nth-child(odd) {
+    background-color: #25256e;
+    color: white;
+}
+
 tr:nth-child(even) {
 	background-color: #f0f0ff;
 }
