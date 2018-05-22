@@ -36,4 +36,5 @@ class Command(BaseCommand):
 
                     for x in delete_list:
                         print "Deleting: ", x.id
-                        x.delete()
+                        if x.id:
+                            x.delete()
