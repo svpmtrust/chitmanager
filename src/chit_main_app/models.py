@@ -55,5 +55,5 @@ class Loan(models.Model):
     accumulated_interest = models.IntegerField(default=0)
 
 class loan_history(models.Model):
-    key = models.ForeignKey(Loan, null = True)
+    key = models.ForeignKey(Loan, null = True,on_delete = models.CASCADE)
     last_payment_date = models.DateField()
