@@ -91,8 +91,7 @@ def group_list(request):
     context = {
         'group_list': group_list,
         'due_amounts': due_amounts,
-        'auctions_left': auctions_left,
-    #    'silly': silly
+        'auctions_left': auctions_left
     }
     return HttpResponse(template.render(context))
 

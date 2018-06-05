@@ -150,7 +150,7 @@ Not in any groups yet
 {% endif %}
 </div>
 <div class="loans-form">
-  {% if silly %}
+  {% if customer_loan %}
   <form action='/customers/record_loan_payment' method="post">
   {% csrf_token %}
   <input type='hidden' name='customer_id' value='{{ customer_details.id }}'/>
@@ -165,7 +165,7 @@ Not in any groups yet
               		<th>Due</th>
               		<th>Payment</th>
               	</tr>
-                {% for loan in silly %}
+                {% for loan in customer_loan %}
                  <tr>
                  		<td>
                        <a href='#' onclick="remove_loan({{loan.id}})">
