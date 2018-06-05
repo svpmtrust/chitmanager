@@ -84,7 +84,7 @@ DATABASES = {
 if os.environ.get('SQLITE','False') == 'True':
     DATABASES['default'] = {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'chit_data.sqlite3'),
+        'NAME': os.path.join(BASE_DIR, '..', 'chit_data.sqlite3'),
     }
 
 if 'DATABASE_URL' in os.environ:
