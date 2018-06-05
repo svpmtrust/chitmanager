@@ -88,9 +88,6 @@ def group_list(request):
         auctions_left[g.id] = g.total_months - auctions_done.get(g.id, 0)
 
     template = loader.get_template('groups/list.html')
-#########################################################################
-    #silly = Loan.objects.filter(identity = request.GET['id'])
-#########################################################################
     context = {
         'group_list': group_list,
         'due_amounts': due_amounts,
@@ -236,8 +233,8 @@ def customersgroups(request):
     dues = JournalItem.objects.filter(subscription__member_id=request.GET['id']).values('subscription_id').annotate(Sum('debit'),Sum('credit'))
     for x in dues:
         due_amounts[x['subscription_id']] = x['debit__sum'] - x['credit__sum']
-    silly = Loan.objects.filter(identity=request.GET['id'])
-    for l in silly :
+    customer_loan = Loan.objects.filter(identity=request.GET['id'])
+    for l in customer_loan :
         if l.approved_date.year == datetime.today().strftime("%Y"):
             if l.approved_date.month == datetime.today().strftime("%m"):
                 l.accumulated_interest = 0
@@ -248,7 +245,7 @@ def customersgroups(request):
         'customer_details':customer_details,
         'due_amounts': due_amounts,
         'total_due': sum(iter(due_amounts.values())),
-        'silly': silly
+        'customer_loan': customer_loan
     }
     template = loader.get_template('customers/grouplist.html')
 
@@ -379,13 +376,13 @@ def new_loan(request):
         template = loader.get_template('customers/loan_registration.html')
         return HttpResponse(template.render({}))
     elif request.method == 'POST':
-        loo = Loan()
-        loo.loan_amount = request.POST['loanAmount']
-        loo.interest = request.POST['ROI']
-        loo.approved_date = request.POST['DOS']
-        loo.loan_name = request.POST['loanName']
-        loo.identity  = Customer.objects.get(id=request.GET['cid'])
-        loo.save()
+        l = Loan()
+        l.loan_amount = request.POST['loanAmount']
+        l.interest = request.POST['rateofinterest']
+        l.approved_date = request.POST['dateofsanction']
+        l.loan_name = request.POST['loanName']
+        l.identity  = Customer.objects.get(id=request.GET['cid'])
+        l.save()
         return HttpResponseRedirect('/customers/grouplist?id='+request.GET['cid'])
 
 @login_required
