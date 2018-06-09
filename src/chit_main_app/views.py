@@ -134,6 +134,7 @@ def new_customer(request):
         user = User()
         user.username = username
         user.set_password(username + request.POST['mobile'])
+        user.last_login = datetime.utcnow()
         user.save()
         member_name = request.POST['name'][0].upper()+request.POST['name'][1:]
         member = Customer(name=member_name, mobile_number=request.POST['mobile'])
