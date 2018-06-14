@@ -1,6 +1,6 @@
 from django.shortcuts import HttpResponse
 from django.template import loader
-from chit_main_app.models import Group,Customer, Subscriptions, Journal,JournalItem, Loan,loan_history
+from chit_main_app.models import Group,Customer, Subscriptions, Journal,JournalItem, Loan,LoanHistory
 from django.http.response import HttpResponseRedirect
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
@@ -134,6 +134,7 @@ def new_customer(request):
         user = User()
         user.username = username
         user.set_password(username + request.POST['mobile'])
+        user.last_login = datetime.utcnow()
         user.save()
         member_name = request.POST['name'][0].upper()+request.POST['name'][1:]
         member = Customer(name=member_name, mobile_number=request.POST['mobile'])
@@ -196,7 +197,6 @@ def customershistory(request):
                 "credit": j_item.txn.amount if j_item.txn.amount else ""
             }
             j.append(previous_data)
-
         previous_data["balance"] -= j_item.credit - j_item.debit
         the_balance -= j_item.credit - j_item.debit
         credit = None
@@ -219,8 +219,15 @@ def customershistory(request):
             "debit": debit or "",
             "item": j_item})
         prvious_txn = j_item.txn
-
-    c = {'journal': j, 'customer_details': customer_details}
+    
+    loan_list = Loan.objects.filter(identity_id=request.GET['id'])
+    loan_transactions = [] 
+    for l_item in loan_list:
+        loan_history_list = LoanHistory.objects.filter(key_id=l_item.id).order_by('last_payment_date')
+        for lh_item in loan_history_list:
+            setattr(lh_item, 'loan_name', l_item.loan_name)
+            loan_transactions.append(lh_item)
+    c = {'journal': j, 'customer_details': customer_details, 'loan_transactions': loan_transactions}
     template = loader.get_template('customers/history.html')
     return HttpResponse(template.render(c))
 
@@ -234,11 +241,16 @@ def customersgroups(request):
         due_amounts[x['subscription_id']] = x['debit__sum'] - x['credit__sum']
     customer_loan = Loan.objects.filter(identity=request.GET['id'])
     for l in customer_loan :
-        if l.approved_date.year == datetime.today().strftime("%Y"):
-            if l.approved_date.month == datetime.today().strftime("%m"):
-                l.accumulated_interest = 0
-        else:
-            l.accumulated_interest = l.accumulated_interest + (l.loan_amount*((int(datetime.today().strftime("%Y"))-int(l.approved_date.year) )*12  - int(l.approved_date.month) +  int(datetime.today().strftime("%m")))*l.interest)/100
+        #l.accumulated_interest = l.accumulated_interest + (l.loan_amount*((int(datetime.today().strftime("%Y"))-int(l.approved_date.year) )*12  - int(l.approved_date.month) +  int(datetime.today().strftime("%m")))*l.interest)/100
+        if l.loan_lastpayment_date.year <= int(datetime.today().strftime("%Y")):
+            no_of_years = int(datetime.today().strftime("%Y"))-int(l.loan_lastpayment_date.year)
+            no_of_months = l.loan_lastpayment_date.month - int(datetime.today().strftime("%m"))
+            if l.loan_lastpayment_date.month <= int(datetime.today().strftime("%m")):
+                total_months = abs(no_of_years*12) + abs(no_of_months)
+            else:
+                total_months = abs(no_of_years*12) - abs(no_of_months)
+            l.accumulated_interest = l.accumulated_interest + int(l.loan_amount * total_months * ((int(l.interest)/12)/100))
+              
     context = {
         'group_list':group_list,
         'customer_details':customer_details,
@@ -381,6 +393,7 @@ def new_loan(request):
         l.approved_date = request.POST['dateofsanction']
         l.loan_name = request.POST['loanName']
         l.identity  = Customer.objects.get(id=request.GET['cid'])
+        l.loan_lastpayment_date = l.approved_date
         l.save()
         return HttpResponseRedirect('/customers/grouplist?id='+request.GET['cid'])
 
@@ -419,30 +432,47 @@ def record_customer_payment(request):
 
 @login_required
 def record_customer_loan_payment(request):
+    payments_for = {}
     for l in Loan.objects.filter(identity_id = request.POST['customer_id']):
         k = 'payment_for_' + str(l.id)
         if k  in request.POST and request.POST[k]:
+            payments_for[l.id] = int(request.POST[k])
+            payment_date = datetime.strptime(request.POST['loan_payment_date'], '%Y-%m-%d').date()
+            if int(l.loan_lastpayment_date.year) <= int(payment_date.year):
+                no_of_years = int(payment_date.strftime("%Y"))-int(l.loan_lastpayment_date.year)  
+                no_of_months = l.loan_lastpayment_date.month - int(payment_date.strftime("%m"))
+                if l.loan_lastpayment_date.month <= int(payment_date.strftime("%m")) :
+                    total_months = no_of_years*12 + abs(no_of_months)
+                else :
+                    total_months = no_of_years*12 - abs(no_of_months)
+                l.accumulated_interest = l.accumulated_interest + int(l.loan_amount * total_months * ((int(l.interest)/12)/100))
+            
             if int(request.POST[k]) >= (l.accumulated_interest+l.loan_amount):
                 l.accumulated_interest = 0
                 l.loan_amount = 0
+                l.loan_lastpayment_date = request.POST['loan_payment_date']
                 l.save()
-            else:
-                if int(request.POST[k]) < l.accumulated_interest :
-                    l.accumulated_interest = l.accumulated_interest - int(request.POST[k])
-                    l.save()
-                    h = loan_history(key = l)
-                    h.last_payment_date  =  request.POST['loan_payment_date']
-                    h.save()
-                else:
-                    l.loan_amount = l.loan_amount + l.accumulated_interest - int(request.POST[k])
-                    l.accumulated_interest = 0
-                    l.save()
-                    from pprint import pprint
-                    pprint(request.POST)
-                    h = loan_history(key= l)
-                    h.last_payment_date  =  request.POST['loan_payment_date']
-                    h.save()
+
+            elif int(request.POST[k]) >= (l.accumulated_interest):
+                l.loan_amount = l.loan_amount - (int(request.POST[k]) - l.accumulated_interest)
+                l.accumulated_interest = 0
+                l.loan_lastpayment_date = request.POST['loan_payment_date']
+                l.save()
+
+            elif int(request.POST[k]) < l.accumulated_interest :
+                l.accumulated_interest = l.accumulated_interest - int(request.POST[k])
+                l.loan_amount = l.loan_amount
+                l.loan_lastpayment_date = request.POST['loan_payment_date']
+                l.save()
+
+            from pprint import pprint
+            pprint(request.POST)
+            h = LoanHistory(key = l)
+            h.last_payment_date  =  request.POST['loan_payment_date']
+            h.payment_amount = int(request.POST[k])
+            h.save()
     return HttpResponseRedirect('/customers/grouplist?id='+request.POST['customer_id'])
+
 @login_required
 def new_mobile_number(request):
     m = Customer.objects.get(id=request.GET['id'])
@@ -514,7 +544,6 @@ def change_subscription(request):
 def daily_collection(request):
     if(request.method=='GET'):
         return get_daily_collection(request)
-
     if(request.method != 'POST'):
         return HttpResponse('Request must be either GET or POST', status=500)
 
@@ -545,7 +574,6 @@ def daily_collection(request):
             j.entry_type = j.PAYMENT
             j.member = c
             j.save()
-
             # If there any old credit, add it to the current amount
             available_amount = old_credit + cust_payment
             for s in dues:
@@ -563,7 +591,6 @@ def daily_collection(request):
                 available_amount -= j1.credit
                 if available_amount == 0:
                     break
-
             if available_amount != old_credit:
                 j1 = JournalItem()
                 j1.txn = j

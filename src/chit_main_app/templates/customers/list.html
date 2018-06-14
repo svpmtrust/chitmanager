@@ -42,6 +42,11 @@ $(function() {
 			for(id in data){ $("#current-amount-"+id).html(data[id]) }
 		})
 	})
+	$('#datepicker').change(function(){
+		$.get('/customers/daily_collection',{date:$('#datepicker').val()}).done(function(data){
+			for(id in data){ $("#current-amount-"+id).html(data[id]) }
+		})
+	})
 });
 
 </script>

@@ -1,7 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
-from datetime import date
-
+from datetime import date, datetime
 
 # Create your models here        .
 class Group(models.Model):
@@ -51,9 +50,12 @@ class Loan(models.Model):
     loan_amount = models.IntegerField()
     interest = models.IntegerField()
     approved_date = models.DateField()
+    loan_lastpayment_date = models.DateField()
     loan_name = models.CharField(max_length=30,null=True)
     accumulated_interest = models.IntegerField(default=0)
 
-class loan_history(models.Model):
+class LoanHistory(models.Model):
     key = models.ForeignKey(Loan, null = True,on_delete = models.CASCADE)
     last_payment_date = models.DateField()
+    payment_amount = models.IntegerField(default=0)
+
