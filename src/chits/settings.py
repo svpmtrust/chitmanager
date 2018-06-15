@@ -72,10 +72,10 @@ WSGI_APPLICATION = 'chits.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME':'chitmanager',
-        #'NAME': 'heroku_e18935074c20bff',
+        #'NAME':'chitmanager',
+        'NAME': 'heroku_e18935074c20bff',
         'USER': 'root',
-        'PASSWORD':'vikky',
+        'PASSWORD':'karthik',
         'HOST': '',
         'PORT': '',
     }
