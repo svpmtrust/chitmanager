@@ -481,6 +481,11 @@ def daily_collection(request):
             
             # If there any old credit, add it to the current amount
             available_amount = old_credit + cust_payment
+
+            print "\n"
+            print "Total available amount == ", available_amount
+            print "\n"
+
             for s in dues:
                 s_id = s['subscription_id']
                 due = s['debit__sum'] - s['credit__sum']
@@ -500,7 +505,7 @@ def daily_collection(request):
             if available_amount != old_credit:
                 j1 = JournalItem()
                 j1.txn = j
-                j1.credit = cust_payment
+                j1.credit = 0
                 j1.subscription_id = pc_id
                 j1.debit = 0
                 if old_credit < available_amount:
