@@ -35,13 +35,13 @@
 	width: 100%
 }
 .menu {
-    border: 1px lightblue solid; 
+    border: 1px lightblue solid;
     padding-top: 1pt;
     padding-bottom: 1pt;
     padding-left: 10pt;
     padding-right: 10pt;
     background: lightgray;
-    text-decoration: none; 
+    text-decoration: none;
 }
 .action_icon {
 	width: 12pt;
@@ -49,7 +49,7 @@
 }
 .label {
 	color: gray;
-	text-align: right;	
+	text-align: right;
 }
 button, submit {
 	font-size: 12pt;
@@ -61,7 +61,7 @@ span.warning {
 }
 
 .payment-amount {
-   font-size: 12pt;	
+   font-size: 12pt;
 }
 
 .total-amount, .extraCredits {
@@ -93,4 +93,18 @@ tr:nth-child(even) {
 
 tr:nth-child(odd) {
 	background-color: #ffffff;
+}
+
+
+.form-container {
+    width: 100%;
+    margin: auto;
+}
+.groups-form {
+    width: 48%;
+    float: left;
+}
+.loans-form {
+   width: 48%;
+    float: right;
 }

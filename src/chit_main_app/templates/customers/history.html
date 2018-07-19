@@ -25,10 +25,14 @@ $(document).ready(function(){
 });
 </script>
 
-Name: <b>{{customer_details.name}}</b><br/>
 Mobile: <b>{{customer_details.mobile_number}}</b>
 
 <p/>
+
+
+
+<div class="form-container">
+	<div class="groups-form">
 
 {% if journal %}
 {{ 0|counter_reset:'ALL' }}
@@ -77,5 +81,29 @@ Mobile: <b>{{customer_details.mobile_number}}</b>
 {% else %}
 No activity found
 {% endif %}
+</div>
 
+
+
+<div class="groups-form">
+		{% if loan_transactions %}
+		<table border="1" cellspacing=0 cellpadding=5pt>
+				<tr>
+					<th>Loan Name</th>
+					<th>Payment Amount</th>
+					<th>Payment Date</th>
+				</tr>
+				{% for lh_item in loan_transactions %}
+				<tr class="smalldetail maintxn">
+					<td align="right" class="smalldetail"> {{ lh_item.loan_name }} </td> 
+					<td align="right" class="smalldetail"> {{ lh_item.payment_amount }} </td> 
+					<td align="right" class="smalldetail"> {{ lh_item.last_payment_date }} </td> 
+				</tr>
+				{% endfor %}
+			</table>
+			{% else %}
+			No activity found
+			{% endif %}	
+</div>
+</div>
 {% endblock %}

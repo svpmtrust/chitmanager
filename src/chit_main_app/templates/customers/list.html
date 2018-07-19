@@ -17,6 +17,14 @@ function change_mobile(id) {
 	return false
 }
 
+function change_name(id) {
+	new_name = prompt('Enter new name: ')
+	if (new_name) {
+		window.location = '/customers/name?id='+id+'&new_name='+new_name
+	}
+	return false
+}
+
 $(function() {
 	$('.payment-amount').change(function() {
 		var total = 0
@@ -27,7 +35,12 @@ $(function() {
 			}
 		})
 		$('#total_collection').val(total)
-	
+
+	})
+	$('#datepicker').change(function(){
+		$.get('/customers/daily_collection',{date:$('#datepicker').val()}).done(function(data){
+			for(id in data){ $("#current-amount-"+id).html(data[id]) }
+		})
 	})
 	$('#datepicker').change(function(){
 		$.get('/customers/daily_collection',{date:$('#datepicker').val()}).done(function(data){
@@ -38,7 +51,7 @@ $(function() {
 
 </script>
 <button onclick="window.location='/customers/new'">Add Customer</button> <P/>
-{% if customer_list %} 
+{% if customer_list %}
 <form method="post" action="/customers/daily_collection">
 {% csrf_token %}
 <table>
@@ -67,7 +80,8 @@ $(function() {
 			{% else %}
 			<td> &nbsp; </td>
 			{% endif %}
-			<td><a href="/customers/grouplist?id={{customer.id}}">{{ customer.name }}</a></td>
+			<td><a href="/customers/grouplist?id={{customer.id}}">{{ customer.name }}</a><a href='#' onclick="return change_name({{ customer.id }})">
+				<img src='/static/edit.png' class='action_icon' title='Change name'/></a></td>
 			<td><a href='/customers/history?id={{customer.id}}'>
 				<img src="/static/list.png" class='action_icon' title='Customer Transaction History'/></a></td>
 			<td>{{ customer.mobile_number }} <a href='#' onclick="return change_mobile({{ customer.id }})">
@@ -90,5 +104,5 @@ $(function() {
 </form>
 {% else %}
 	<p>No Customers are available.</p>
-{% endif %}	
+{% endif %}
 {% endblock %}

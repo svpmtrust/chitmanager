@@ -75,7 +75,7 @@ DATABASES = {
         #'NAME':'chitmanager',
         'NAME': 'heroku_e18935074c20bff',
         'USER': 'root',
-        'PASSWORD':'',
+        'PASSWORD':'karthik',
         'HOST': '',
         'PORT': '',
     }
@@ -106,7 +106,7 @@ if 'DATABASE_URL' in os.environ:
         if url.scheme == 'mysql':
             DATABASES['default']['ENGINE'] = 'django.db.backends.mysql'
     except Exception:
-        print 'Unexpected error:', sys.exc_info()
+        print('Unexpected error:', sys.exc_info())
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.6/topics/i18n/
