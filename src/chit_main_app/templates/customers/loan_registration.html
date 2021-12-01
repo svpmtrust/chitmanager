@@ -1,0 +1,31 @@
+{% extends "site_layout.html" %}
+{% block title %}New Loan{% endblock %}
+{% block page_heading %}Loan Registration Form{% endblock %}
+{% block content %}
+<form method="post">
+              {% csrf_token %}
+              <table border="0">
+                <tr>
+                  <td align="right">Name of the Loan :</td>
+                  <td><input type="text" name = "loanName" required placeholder="Enter the name of your Loan"></td>
+                </tr>
+                <tr>
+                  <td align="right">Loan amount :</td>
+                  <td><input type="number" name = "loanAmount" required placeholder="Enter the Loan Amount"></td>
+                </tr>
+                <tr>
+                  <td align="right">Rate of Interest :</td>
+                  <td><input type="number" name = "rateofinterest" required placeholder="Enter the rate of Interest"></td>
+                </tr>
+                <tr>
+                  <td align="right">Date of Sanction:</td>
+                  <td><input type="date" id = "datepicker" name = "dateofsanction" required placeholder="Please select the date of sanction"></td>
+                </tr>
+                <tr>
+                        <td padding-left: 130; colspan="2"><input type="submit" value="Register"> </td>
+
+                </tr>
+              </table>
+
+</form>
+{% endblock %}

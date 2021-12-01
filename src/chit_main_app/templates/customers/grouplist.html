@@ -1,11 +1,13 @@
 {% extends "site_layout.html" %}
 {% load myfilter %}
-{% block title %}{{customer_details.name}} details{% endblock %} 
+{% block title %}{{customer_details.name}} details{% endblock %}
 {% block page_heading %} Details of {{customer_details.name}} {% endblock %}
 {% block content %}
 
 <button onclick="window.location='/customers/subscription?cid={{customer_details.id}}'">Add To Group</button>
+<button onclick="window.location='/customers/loan_registration?cid={{customer_details.id}}'">New Loan</button>
 <button onclick="window.location='/customers/history?id={{customer_details.id}}'">Transaction History</button>
+
 <p/>
  <script>
 $(function() {
@@ -18,11 +20,10 @@ $(document).ready(function(){
   var txtDueAmounts = $('.payment-amount');
   var sum = 0;
   $.each(arr,function(){sum+= parseFloat($(this).text()) || 0;});
-  
-  var in_progress = 0
+
+  var in_progress = 0;
 
   function line_item_change(){
-	    if (in_progress) { return }
 	    in_progress = 1
 	    var sumOfTxtDueAmounts = 0;
 	    $.each(txtDueAmounts ,function(){sumOfTxtDueAmounts+= parseFloat($(this).val()) || 0;});
@@ -30,19 +31,19 @@ $(document).ready(function(){
 	    $("#total_payment").val(sumOfTxtDueAmounts);
 	    in_progress = 0
 	  }
-  
+
   $(".payment-amount").change(line_item_change);
   $(".payment-amount").keyup(line_item_change);
   $(".extraCredits").keyup(line_item_change);
-  
+
   function amount_changed() {
 	  if (in_progress) { return }
 	  in_progress = 1
       var remaing_amount = parseInt($("#total_payment").val());
-      
+
       console.log(typeof(txtDueAmounts));
       console.log(txtDueAmounts);
-      
+
       for(var i=0; i<arr.length; i++) {
     	  var this_due = parseInt($(arr[i]).text())
     	  if (remaing_amount > 0) {
@@ -61,10 +62,8 @@ $(document).ready(function(){
       in_progress = 0
   }
   $("#total_payment").change(amount_changed);
-  
+
 });
-
-
 function remove_subscription(id) {
 	x = confirm('Are you sure you want to remove the subscription?')
 	if (x) {
@@ -74,67 +73,125 @@ function remove_subscription(id) {
 		return false;
 	}
 }
+
+function remove_loan(id) {
+	x = confirm('Are you sure you want to remove the loan?')
+	if (x) {
+	       window.location = '/customers/remove_loan?return_to=loan&id='+id
+	}
+	else {
+		return false;
+	}
+}
 </script>
-{% if group_list %} 
-<form action='/customers/record_payment' method="post">
-{% csrf_token %}
-<input type='hidden' name='customer_id' value='{{ customer_details.id }}'/>
-<table border="0">
-<tr align='right'>
-		<td> Payment Date: <input id='datepicker' name='payment_date' type='text'/>
-	</tr>
-<tr><td>
-<table border="1" bordercolor=lightgray cellspacing=0 cellpadding=5>
-	<tr>
-		<th>&nbsp;</th>
-		<th>Group Names</th>
-		<th>Subscription</th>
-		<th>Auction Amount</th>
-		<th>Due</th>
-		<th>Payment</th>
-	</tr>
-  {% for subscription in group_list %}
-   <tr>
-   		<td>
-   		  {% if subscription.group.started %}
-   		  &nbsp;
-   		  {% else %}
-		  <a href='#' onclick="remove_subscription({{subscription.id}})">
-		    <img src='/static/remove.png' class='action_icon' tooltip='Delete Subscription'/>
-		  </a>
-		  {% endif %}
-		</td>
-		<td>{{subscription.group.name}}</td>
-		<td><a href="/customers/group_activity?subscription_id={{ subscription.id }}&return_to=customer">{{subscription.id}}</a></td>
-		<td>{{subscription.auction_amount|default:"-"}}</td>
-		<td><span 
-		{% if not subscription.group_id == 1 %}
-		class='dueAmount'
-		{% endif %}
-		>{{due_amounts|get_item:subscription.id}}</span></td>
-		<td><input dir="rtl" size=10 pattern="\d*"
-			{% if subscription.group_id == 1 %}
-			class='extraCredits'
-			{% else %}
-			class='payment-amount'
-			{% endif %}
-		 	name="payment_for_{{ subscription.id }}"/>
-		</td>
-   </tr>
-	{% endfor %}
-	<tr>
-		<td align='right' colspan='4'> <b>Total:</b> </td>
-		<td> <b>{{total_due}}</b> </td>
-		<td align='right' colspan='4'> <input id='total_payment' class='total-amount' autocomplete="off"  name='payment_amount' size=10 dir="rtl"/> </td>
-	<tr>
-</table>
-	<tr align='right'>
-		<td><button onclick="window.location='#">Record Payment</button> </td>
-	<tr>
-	
-</table>
-</form>
+<div class="form-container">
+  {% if group_list %}
+  <div class="groups-form">
+    <form action='/customers/record_payment' method="post">
+    {% csrf_token %}
+    <input type='hidden' name='customer_id' value='{{ customer_details.id }}'/>
+    <table border="0">
+        <tr>
+          <td>
+            <table border="1" bordercolor=lightgray cellspacing=0 cellpadding=5>
+            	<tr>
+            		<th>&nbsp;</th>
+            		<th>Group Names</th>
+            		<th>Subscription</th>
+            		<th>Auction Amount</th>
+            		<th>Due</th>
+            		<th>Payment</th>
+            	</tr>
+              {% for subscription in group_list %}
+               <tr>
+               		<td>
+               		  {% if subscription.group.started %}
+               		  &nbsp;
+               		  {% else %}
+            		  <a href='#' onclick="remove_subscription({{subscription.id}})">
+            		    <img src='/static/remove.png' class='action_icon' tooltip='Delete Subscription'/>
+            		  </a>
+            		  {% endif %}
+            		</td>
+            		<td>{{subscription.group.name}}</td>
+            		<td><a href="/customers/group_activity?subscription_id={{ subscription.id }}&return_to=customer">{{subscription.id}}</a></td>
+            		<td>{{subscription.auction_amount|default:"-"}}</td>
+            		<td><span
+            		{% if not subscription.group_id == 1 %}
+            		class='dueAmount'
+            		{% endif %}
+            		>{{due_amounts|get_item:subscription.id}}</span></td>
+            		<td><input dir="rtl" size=10 pattern="\d*"
+            			{% if subscription.group_id == 1 %}
+            			class='extraCredits'
+            			{% else %}
+            			class='payment-amount'
+            			{% endif %}
+            		 	name="payment_for_{{ subscription.id }}"/>
+            		</td>
+               </tr>
+            	{% endfor %}
+            	<tr>
+            		<td align='right' colspan='4'> <b>Total:</b> </td>
+            		<td> <b>{{total_due}}</b> </td>
+            		<td align='right' colspan='4'> <input id='total_payment' class='total-amount' autocomplete="off"  name='payment_amount' size=10 dir="rtl"/> </td>
+            	<tr>
+            </table>
+          </td>
+      </tr>
+    </table>
+    <br>
+    <p>payment date: <input name='payment_date' type='date'/></p>
+    <br>
+    <center><button align="center " onclick="window.location-'#'">Record Payment</button></center>
+    </form>
 {% else %}
 Not in any groups yet
 {% endif %}
+</div>
+<div class="loans-form">
+  {% if customer_loan %}
+  <form action='/customers/record_loan_payment' method="post">
+  {% csrf_token %}
+  <input type='hidden' name='customer_id' value='{{ customer_details.id }}'/>
+              <table border="1" bordercolor=lightgray cellspacing=0 cellpadding=5>
+              	<tr>
+              		<th>&nbsp;</th>
+              		<th>Loan Name</th>
+              		<th>Principal Amount</th>
+              		<th>Rate of <br>Interest
+                  </th>
+                  <th>Accumulated <br> Interest</th>
+              		<th>Due</th>
+              		<th>Payment</th>
+              	</tr>
+                {% for loan in customer_loan %}
+                 <tr>
+                 		<td>
+                       <a href='#' onclick="remove_loan({{loan.id}})">
+                		    <img  src='/static/remove.png' height='16px' width='16px'>
+                      </a>
+                		</td>
+                		<td>{{loan.loan_name}}</td>
+                		<td>{{loan.loan_amount}}</td>
+                		<td>{{loan.interest}}</td>
+                		<td>{{loan.accumulated_interest}}</td>
+                		<td>{{loan.accumulated_interest|add_loan:loan.loan_amount }}</td>
+                    <td><input dir="rtl" size=10 pattern="\d*" name="payment_for_{{loan.id}}"/>
+                		</td>
+                  </tr>
+          	       {% endfor %}
+          </table>
+  <br>
+  <br>
+  <p>payment date: <input  name='loan_payment_date' type='date'/></p>
+  <br>
+  <br>
+  <center><button align="center " onclick=""="window.location-'#'">Record Payment</button></center>
+  </form>
+  {% else %}
+  Not in any loans yet
+  {% endif %}
+</div>
+</div>
 {% endblock %}

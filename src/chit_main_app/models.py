@@ -1,5 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
+from datetime import date
+
 
 # Create your models here        .
 class Group(models.Model):
@@ -22,7 +24,7 @@ class Subscriptions(models.Model):
     auction_amount = models.IntegerField(null=True)
     auction_date = models.DateField(null=True)
     auction_number = models.IntegerField(null=True)
-    
+
 class Journal(models.Model):
     member = models.ForeignKey(Customer, null=True)
     amount = models.IntegerField(null=True)
@@ -43,3 +45,15 @@ class JournalItem(models.Model):
     subscription = models.ForeignKey(Subscriptions)
     debit = models.IntegerField()
     credit = models.IntegerField()
+
+class Loan(models.Model):
+    identity = models.ForeignKey(Customer)
+    loan_amount = models.IntegerField()
+    interest = models.IntegerField()
+    approved_date = models.DateField()
+    loan_name = models.CharField(max_length=30,null=True)
+    accumulated_interest = models.IntegerField(default=0)
+
+class loan_history(models.Model):
+    key = models.ForeignKey(Loan, null = True,on_delete = models.CASCADE)
+    last_payment_date = models.DateField()
