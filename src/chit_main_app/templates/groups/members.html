@@ -48,6 +48,14 @@ function edit_auctiondate(id) {
 	}
 	return false
 }
+
+function edit_auctionamount(id) {
+	new_amount = prompt('Enter new auction amount: ')
+	if (new_amount) {
+		window.location = '/groups/auction_amount?id='+id+'&new_amount='+new_amount
+	}
+	return false
+}
 </script>
 
 <h3>Group Members</h3>
@@ -93,7 +101,7 @@ function edit_auctiondate(id) {
 		  </a>
 		</td>
 		<td>{{subscription.auction_amount|default_if_none:"-"}}
-   		   <a href='#' onclick="return change_auctiondate({{subscription.id}})">
+   		   <a href='#' onclick="return edit_auctionamount({{subscription.id}})">
 		    <img src='/static/edit.png' class='action_icon' align='right' title ='Delete Auction' />
 		  </a>
 			</td>

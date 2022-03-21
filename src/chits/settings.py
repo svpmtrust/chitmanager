@@ -54,7 +54,7 @@ TEMPLATES = [
     },
 ]
 
-MIDDLEWARE_CLASSES = (
+MIDDLEWARE = (
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     # 'django.middleware.csrf.CsrfViewMiddleware',
@@ -106,7 +106,7 @@ if 'DATABASE_URL' in os.environ:
         if url.scheme == 'mysql':
             DATABASES['default']['ENGINE'] = 'django.db.backends.mysql'
     except Exception:
-        print 'Unexpected error:', sys.exc_info()
+        print ('Unexpected error:', sys.exc_info())
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.6/topics/i18n/

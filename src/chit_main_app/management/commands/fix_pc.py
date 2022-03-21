@@ -10,7 +10,7 @@ class Command(BaseCommand):
         
         for ji in JournalItem.objects.all():
             txn_set[ji.txn_id].append(ji)
-        for txn_id, ji_list in txn_set.iteritems():
+        for txn_id, ji_list in txn_set.items():
             
             delete_list = []
             add_list = []
@@ -35,6 +35,6 @@ class Command(BaseCommand):
                     new_ji.save()
 
                     for x in delete_list:
-                        print "Deleting: ", x.id
+                        print ("Deleting: ", x.id)
                         if x.id:
                             x.delete()

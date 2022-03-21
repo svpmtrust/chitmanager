@@ -1,4 +1,4 @@
 django
-mysql-python
+mysqlclient
 gunicorn
 dj_static

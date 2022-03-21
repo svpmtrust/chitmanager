@@ -1,4 +1,4 @@
-from django.conf.urls import url
+from django.urls import re_path as url
 import chit_main_app.views
 from django.views.generic.base import RedirectView
 import django.contrib.auth.views as auth_views
@@ -6,9 +6,9 @@ import django.contrib.auth.views as auth_views
 urlpatterns = [
     # Basic Stuff
     url(r'^$', RedirectView.as_view(url='/home')),
-    url(r'^login/$', auth_views.login),
+    url(r'^login/$', auth_views.LoginView.as_view()),
     url(r'^home/$', chit_main_app.views.homepage),
-    url(r'^logout/$', auth_views.logout, name='logout'),
+    url(r'^logout/$', auth_views.LogoutView.as_view(), name='logout'),
     
     # Group operations
     url(r'^groups/new$', chit_main_app.views.new_group),
@@ -19,6 +19,7 @@ urlpatterns = [
     url(r'^groups/remove_subscription$', chit_main_app.views.remove_subscription),
     url(r'^groups/change_subscription$', chit_main_app.views.change_subscription),
     url(r'^groups/auction_date$', chit_main_app.views.new_auction_date),
+    url(r'^groups/auction_amount$', chit_main_app.views.new_auction_amount),
     
     # Customer Operations
     url(r'^customers/new$', chit_main_app.views.new_customer),

@@ -237,7 +237,7 @@ def customersgroups(request):
         'group_list':group_list,
         'customer_details':customer_details,
         'due_amounts': due_amounts,
-        'total_due': sum(due_amounts.itervalues())
+        'total_due': sum(due_amounts.values())
     }
     template = loader.get_template('customers/grouplist.html')
     return HttpResponse(template.render(context))
@@ -339,9 +339,10 @@ def new_auction(request):
                 s1.comments = 'Automatically subscribed'
                 s1.save()
 
-        monthly_due = g.amount / g.total_months
-        dividend = (s.auction_amount - (g.amount * g.commision)/100) / g.total_months
-        due_amount = monthly_due - dividend
+        if s.auction_amount > g.amount/2:
+            raise Exception("auction amount can not be more then half the group amount")
+
+        due_amount = find_due_amount(s, g)
         
         # Create main journal Entries
         j = Journal()
@@ -358,8 +359,18 @@ def new_auction(request):
             j1.credit = 0
             j1.subscription_id = s1.id
             j1.save()
+
+        s.auction_txn =j
+        s.save()
+
         
         return HttpResponseRedirect('/groups/members?id='+ request.POST['group_id']) 
+
+def find_due_amount(s, g):
+    monthly_due = g.amount / g.total_months
+    dividend = (s.auction_amount - (g.amount * g.commision)/100) / g.total_months
+    due_amount = monthly_due - dividend
+    return due_amount
 
 @login_required
 def record_customer_payment(request):
@@ -380,14 +391,19 @@ def record_customer_payment(request):
     j.save()
         
     # Create due amounts after subtracting dividends
-    for s_id, p_amount in payments_for.iteritems():
+    for s_id, p_amount in payments_for.items():
         
-        print s_id, p_amount
+        print (s_id, p_amount)
         
         j1 = JournalItem()
         j1.txn = j
-        j1.debit = 0
-        j1.credit = p_amount
+        if (p_amount > 0):
+            j1.debit = 0
+            j1.credit = p_amount
+        else:
+            j1.debit = -p_amount
+            j1.credit = 0
+            
         j1.subscription_id = s_id
         j1.save()
     
@@ -407,6 +423,26 @@ def new_auction_date(request):
     a.auction_date = request.GET['new_date']
     a.save()
     return HttpResponseRedirect('/groups/members?id=%s' % a.group_id)
+
+@login_required
+def new_auction_amount(request):
+    a = Subscriptions.objects.get(id=request.GET['id'])
+    new_amount = int(request.GET['new_amount'])
+
+    if a.auction_txn is None:
+        raise Exception("Cannot change the auction amounts for old auctions")
+
+    # Calculate new divident with the same formula 
+    a.auction_amount = new_amount
+    due_amount = find_due_amount(a, a.group)
+    
+    for je in JournalItem.objects.filter(txn_id = a.auction_txn.id):
+        je.debit = due_amount
+        je.save()
+    a.save()
+
+    return HttpResponseRedirect('/groups/members?id=%s' % a.group_id)
+
 
 @login_required
 def remove_subscription(request):
@@ -456,8 +492,8 @@ def daily_collection(request):
         cust_payment = request.POST.get('customer_collection_%s' % c.id)
         cust_payment = int(cust_payment) if cust_payment else 0
         if cust_payment:
-            print "Payment for ", c.name, " is ", cust_payment
-            print "Finding subscriptions with due amounts"
+            print ("Payment for ", c.name, " is ", cust_payment)
+            print ("Finding subscriptions with due amounts")
             dues = (JournalItem.objects
                                .filter(subscription__member_id=c.id)
                                .values('subscription_id')
@@ -482,9 +518,9 @@ def daily_collection(request):
             # If there any old credit, add it to the current amount
             available_amount = old_credit + cust_payment
 
-            print "\n"
-            print "Total available amount == ", available_amount
-            print "\n"
+            print ("\n")
+            print ("Total available amount == ", available_amount)
+            print ("\n")
 
             for s in dues:
                 s_id = s['subscription_id']
